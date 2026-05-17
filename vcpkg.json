@@ -1,0 +1,9 @@
+{
+  "name": "software-ganadero",
+  "version": "0.1.0",
+  "dependencies": [
+    "sqlite3",
+    "lmdb",
+    "nlohmann-json"
+  ]
+}
