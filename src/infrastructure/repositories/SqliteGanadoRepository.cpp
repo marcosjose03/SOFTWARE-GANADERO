@@ -1,6 +1,7 @@
 #include "SqliteGanadoRepository.h"
 #include <sqlite3.h>
 #include <stdexcept>
+#include "domain/entities/GanadoEnums.h"
 
 namespace Infrastructure {
 
@@ -29,13 +30,13 @@ Domain::Ganado SqliteGanadoRepository::rowToGanado(sqlite3_stmt* stmt) const {
     };
 
     g.id            = col(0);
-    g.especie       = col(1);
+    g.especie       = Domain::especieFromString(col(1));
     g.identificador = sqlite3_column_int(stmt, 2);
     g.idUsuario     = col(3);
     g.idFinca       = col(4);
     g.nacimiento    = col(5);
-    g.sexo          = col(6);
-    g.estado        = col(7);
+    g.sexo          = Domain::sexoFromString(col(6));
+    g.estado        = Domain::estadoFromString(col(7));
     g.raza          = optCol(8);
     g.idPadre       = optCol(9);
     g.idMadre       = optCol(10);
@@ -106,13 +107,13 @@ bool SqliteGanadoRepository::insert(const Domain::Ganado& g) {
         return false;
 
     sqlite3_bind_text(stmt,  1, g.id.c_str(),          -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt,  2, g.especie.c_str(),      -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, Domain::especieToString(g.especie).c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int (stmt,  3, g.identificador);
     sqlite3_bind_text(stmt,  4, g.idUsuario.c_str(),    -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  5, g.idFinca.c_str(),      -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  6, g.nacimiento.c_str(),   -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt,  7, g.sexo.c_str(),         -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt,  8, g.estado.c_str(),       -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 7, Domain::sexoToString(g.sexo).c_str(),       -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 8, Domain::estadoToString(g.estado).c_str(),   -1, SQLITE_TRANSIENT);
     bindOptionalText (stmt,  9, g.raza);
     bindOptionalText (stmt, 10, g.idPadre);
     bindOptionalText (stmt, 11, g.idMadre);
@@ -145,13 +146,13 @@ bool SqliteGanadoRepository::update(const Domain::Ganado& g) {
     if (sqlite3_prepare_v2(m_db->handle(), sql, -1, &stmt, nullptr) != SQLITE_OK)
         return false;
 
-    sqlite3_bind_text(stmt,  1, g.especie.c_str(),    -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, Domain::especieToString(g.especie).c_str(), -1, SQLITE_TRANSIENT);
     sqlite3_bind_int (stmt,  2, g.identificador);
     sqlite3_bind_text(stmt,  3, g.idUsuario.c_str(),  -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  4, g.idFinca.c_str(),    -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  5, g.nacimiento.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt,  6, g.sexo.c_str(),       -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt,  7, g.estado.c_str(),     -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 6, Domain::sexoToString(g.sexo).c_str(),       -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 7, Domain::estadoToString(g.estado).c_str(),   -1, SQLITE_TRANSIENT);
     bindOptionalText (stmt,  8, g.raza);
     bindOptionalText (stmt,  9, g.idPadre);
     bindOptionalText (stmt, 10, g.idMadre);

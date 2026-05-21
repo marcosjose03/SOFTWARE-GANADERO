@@ -17,7 +17,8 @@ protected:
         usuarioRepo->insert(Usuario{
             .id     = "user-001",
             .nombre = "Dueño",
-            .email  = "dueno@test.com"
+            .email  = "dueno@test.com",
+            .contrasena = "pass123"
         });
 
         auto fincaRepo = std::make_shared<SqliteFincaRepository>(db);
@@ -39,14 +40,14 @@ protected:
     Ganado makeGanado(const std::string& id = "ganado-001") {
         return Ganado{
             .id            = id,
-            .especie       = "Bovino",
+            .especie       = Domain::Especie::Bovino,
             .identificador = 101,
             .idUsuario     = "user-001",
             .idFinca       = "finca-001",
             .nacimiento    = "2020-05-10",
-            .sexo          = "Hembra",
-            .estado        = "Activo",
-            .raza          = "Holstein",
+            .sexo          = Domain::SexoGanado::Hembra,
+            .estado        = Domain::EstadoGanado::Activo,
+            .raza          = "Holstein Negro",
             .idPadre       = std::nullopt,
             .idMadre       = std::nullopt,
             .chapeta        = "A-101",
@@ -64,10 +65,10 @@ TEST_F(SqliteGanadoRepositoryTest, InsertAndGetById) {
 
     auto result = repo->getById("ganado-001");
     ASSERT_TRUE(result.has_value());
-    EXPECT_EQ(result->especie,       "Bovino");
+    EXPECT_EQ(result->especie,       Domain::Especie::Bovino);
     EXPECT_EQ(result->identificador, 101);
-    EXPECT_EQ(result->sexo,          "Hembra");
-    EXPECT_EQ(result->raza,          "Holstein");
+    EXPECT_EQ(result->sexo,          Domain::SexoGanado::Hembra);
+    EXPECT_EQ(result->raza,          "Holstein Negro");
 }
 
 TEST_F(SqliteGanadoRepositoryTest, GetByIdNotFound) {
@@ -86,7 +87,7 @@ TEST_F(SqliteGanadoRepositoryTest, Update) {
     repo->insert(makeGanado());
 
     auto g        = makeGanado();
-    g.estado      = "Vendido";
+    g.estado      = Domain::EstadoGanado::Vendido;
     g.raza        = "Angus";
     g.fechaDestete = "2020-11-10";
 
@@ -94,7 +95,7 @@ TEST_F(SqliteGanadoRepositoryTest, Update) {
 
     auto result = repo->getById("ganado-001");
     ASSERT_TRUE(result.has_value());
-    EXPECT_EQ(result->estado,       "Vendido");
+    EXPECT_EQ(result->estado,       Domain::EstadoGanado::Vendido);
     EXPECT_EQ(result->raza,         "Angus");
     EXPECT_EQ(result->fechaDestete, "2020-11-10");
 }
@@ -129,4 +130,34 @@ TEST_F(SqliteGanadoRepositoryTest, InsertWithFoto) {
     ASSERT_TRUE(result->foto.has_value());
     EXPECT_EQ(result->foto->size(), 4u);
     EXPECT_EQ((*result->foto)[0],   0x89);
+}
+
+TEST_F(SqliteGanadoRepositoryTest, EspecieSeGuardaComoString) {
+    repo->insert(makeGanado());
+    auto result = repo->getById("ganado-001");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result->especie, Domain::Especie::Bovino);
+}
+
+TEST_F(SqliteGanadoRepositoryTest, RazaValidaParaEspecie) {
+    EXPECT_TRUE(Domain::razaEsValidaParaEspecie("Holstein Negro", Domain::Especie::Bovino));
+    EXPECT_FALSE(Domain::razaEsValidaParaEspecie("Holstein Negro", Domain::Especie::Caprino));
+    EXPECT_TRUE(Domain::razaEsValidaParaEspecie("Murrah", Domain::Especie::Bufalino));
+    EXPECT_FALSE(Domain::razaEsValidaParaEspecie("Murrah", Domain::Especie::Bovino));
+}
+
+TEST_F(SqliteGanadoRepositoryTest, EspecieInvalidaLanzaExcepcion) {
+    EXPECT_THROW(Domain::especieFromString("Inexistente"), std::invalid_argument);
+}
+
+TEST_F(SqliteGanadoRepositoryTest, TodosLosEstados) {
+    auto g = makeGanado("g-muerto");
+    g.estado = Domain::EstadoGanado::Muerto;
+    ASSERT_TRUE(repo->insert(g));
+    EXPECT_EQ(repo->getById("g-muerto")->estado, Domain::EstadoGanado::Muerto);
+
+    auto g2 = makeGanado("g-enfermo");
+    g2.estado = Domain::EstadoGanado::Enfermo;
+    ASSERT_TRUE(repo->insert(g2));
+    EXPECT_EQ(repo->getById("g-enfermo")->estado, Domain::EstadoGanado::Enfermo);
 }

@@ -6,6 +6,7 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteFincaRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteGanadoRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/LmdbProduccionRepository.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/ImageProcessor.cpp
 )
 
 qt_add_executable(SoftwareGanadero ${SOURCES})

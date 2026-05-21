@@ -24,6 +24,7 @@ protected:
             .id                = id,
             .nombre            = "Juan Pérez",
             .email             = "juan@test.com",
+            .contrasena        = "pass123",
             .fechaRegistro     = "2024-01-01",
             .fechaUltimoBackup = std::nullopt
         };
@@ -69,8 +70,9 @@ TEST_F(SqliteUsuarioRepositoryTest, Update) {
         .id                = "user-001",
         .nombre            = "Juan Actualizado",
         .email             = "nuevo@test.com",
-        .fechaRegistro     = "2024-01-01",
-        .fechaUltimoBackup = "2024-06-01"
+        .contrasena        = "pass123",
+        .fechaRegistro     = std::optional<std::string>{"2024-01-01"},
+        .fechaUltimoBackup = std::optional<std::string>{"2024-06-01"}
     };
     ASSERT_TRUE(repo->update(updated));
 
@@ -106,6 +108,7 @@ TEST_F(SqliteUsuarioRepositoryTest, OptionalFieldsNullable) {
         .id                = "user-002",
         .nombre            = "Sin fechas",
         .email             = "test@test.com",
+        .contrasena        = "pass123",
         .fechaRegistro     = std::nullopt,
         .fechaUltimoBackup = std::nullopt
     };
@@ -115,4 +118,11 @@ TEST_F(SqliteUsuarioRepositoryTest, OptionalFieldsNullable) {
     ASSERT_TRUE(result.has_value());
     EXPECT_FALSE(result->fechaRegistro.has_value());
     EXPECT_FALSE(result->fechaUltimoBackup.has_value());
+}
+
+TEST_F(SqliteUsuarioRepositoryTest, ContrasenaSeGuardaCorrectamente) {
+    repo->insert(makeUsuario());
+    auto result = repo->getById("user-001");
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result->contrasena, "pass123");
 }

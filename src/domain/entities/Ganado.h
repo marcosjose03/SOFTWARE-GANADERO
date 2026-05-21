@@ -3,18 +3,19 @@
 #include <optional>
 #include <vector>
 #include <cstdint>
+#include "GanadoEnums.h"
 
 namespace Domain {
 
 struct Ganado {
     std::string              id;
-    std::string              especie;
+    Especie                  especie;
     int                      identificador;
     std::string              idUsuario;
     std::string              idFinca;
     std::string              nacimiento;
-    std::string              sexo;
-    std::string              estado;
+    SexoGanado               sexo;
+    EstadoGanado             estado;
     std::optional<std::string>           raza;
     std::optional<std::string>           idPadre;
     std::optional<std::string>           idMadre;
@@ -26,4 +27,4 @@ struct Ganado {
     std::optional<std::string>           fechaInseminacion;
 };
 
-} // namespace Domainspace Domain
+} // namespace Domain

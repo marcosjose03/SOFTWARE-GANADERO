@@ -17,7 +17,8 @@ protected:
         usuarioRepo->insert(Usuario{
             .id     = "user-001",
             .nombre = "Dueño",
-            .email  = "dueno@test.com"
+            .email  = "dueno@test.com",
+            .contrasena = "pass123"
         });
 
         repo = std::make_shared<SqliteFincaRepository>(db);

@@ -32,6 +32,7 @@ void SQLiteDatabase::initSchema() {
             id                  TEXT NOT NULL PRIMARY KEY,
             nombre              TEXT NOT NULL,
             email               TEXT NOT NULL,
+            contrasena          TEXT NOT NULL,
             fecha_registro      TEXT,
             fecha_ultimo_backup TEXT
         );
