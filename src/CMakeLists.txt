@@ -1,15 +1,31 @@
 set(SOURCES
+
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    # Infrastructure — utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/UuidGenerator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/DateTimeUtils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/ImageProcessor.cpp
+
+    # Infrastructure — database
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/database/SQLiteDatabase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/database/LmdbDatabase.cpp
+
+    # Infrastructure — repositories
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteUsuarioRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteFincaRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteGanadoRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/LmdbProduccionRepository.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/ImageProcessor.cpp
+
+    # Application — use cases
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/usuario/UsuarioUseCases.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/finca/FincaUseCases.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/ganado/GanadoUseCases.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/produccion/ProduccionUseCases.cpp
 )
 
 qt_add_executable(SoftwareGanadero ${SOURCES})
+
+
 
 qt_add_qml_module(SoftwareGanadero
     URI SoftwareGanadero
@@ -25,6 +41,7 @@ target_include_directories(SoftwareGanadero PRIVATE
 target_link_libraries(SoftwareGanadero PRIVATE
     Qt6::Core
     Qt6::Quick
+    Qt6::Gui
     Qt6::QuickControls2
     Qt6::Charts
     SQLite3::SQLite3
