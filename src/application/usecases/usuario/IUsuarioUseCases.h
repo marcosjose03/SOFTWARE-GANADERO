@@ -45,4 +45,10 @@ public:
     [[nodiscard]] virtual bool execute(const std::string& id) = 0;
 };
 
+class ICheckEmailExistsUseCase {
+public:
+    virtual ~ICheckEmailExistsUseCase() = default;
+    [[nodiscard]] virtual bool execute(const std::string& email) = 0;
+};
+
 } // namespace Application

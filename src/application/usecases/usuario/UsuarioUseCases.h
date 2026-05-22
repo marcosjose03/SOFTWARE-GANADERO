@@ -60,4 +60,13 @@ private:
     std::shared_ptr<Domain::IUsuarioRepository> m_repo;
 };
 
+class CheckEmailExistsUseCase : public ICheckEmailExistsUseCase {
+public:
+    explicit CheckEmailExistsUseCase(
+        std::shared_ptr<Domain::IUsuarioRepository> repo);
+    [[nodiscard]] bool execute(const std::string& email) override;
+private:
+    std::shared_ptr<Domain::IUsuarioRepository> m_repo;
+};
+
 } // namespace Application

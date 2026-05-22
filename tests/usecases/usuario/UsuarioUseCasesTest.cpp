@@ -137,3 +137,37 @@ TEST_F(UsuarioUseCasesTest, DeleteInexistente) {
     deleteUC->execute("no-existe");
     SUCCEED();
 }
+
+// ─── CheckEmailExists ────────────────────────────────────────────────────────
+
+class CheckEmailExistsUseCaseTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        db   = std::make_shared<SQLiteDatabase>(":memory:");
+        db->initSchema();
+        repo = std::make_shared<SqliteUsuarioRepository>(db);
+        createUC = std::make_shared<CreateUsuarioUseCase>(repo);
+        checkUC  = std::make_shared<CheckEmailExistsUseCase>(repo);
+    }
+
+    std::shared_ptr<SQLiteDatabase>           db;
+    std::shared_ptr<SqliteUsuarioRepository>  repo;
+    std::shared_ptr<CreateUsuarioUseCase>     createUC;
+    std::shared_ptr<CheckEmailExistsUseCase>  checkUC;
+};
+
+TEST_F(CheckEmailExistsUseCaseTest, EmailExistente) {
+    createUC->execute({"Juan", "juan@test.com", "pass123"});
+    EXPECT_TRUE(checkUC->execute("juan@test.com"));
+}
+
+TEST_F(CheckEmailExistsUseCaseTest, EmailInexistente) {
+    EXPECT_FALSE(checkUC->execute("noexiste@test.com"));
+}
+
+TEST_F(CheckEmailExistsUseCaseTest, EmailExistenteTrasDosUsuarios) {
+    createUC->execute({"Juan", "juan@test.com",  "pass1"});
+    createUC->execute({"Ana",  "ana@test.com",   "pass2"});
+    EXPECT_TRUE(checkUC->execute("ana@test.com"));
+    EXPECT_FALSE(checkUC->execute("otro@test.com"));
+}

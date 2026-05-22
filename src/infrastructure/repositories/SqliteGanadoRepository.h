@@ -14,6 +14,7 @@ public:
     bool                                        insert(const Domain::Ganado& g)           override;
     bool                                        update(const Domain::Ganado& g)           override;
     bool                                        deleteById(const std::string& id)          override;
+    [[nodiscard]] std::vector<Domain::Ganado>   getByFinca(const std::string& idFinca) const override;
 
 private:
     std::shared_ptr<SQLiteDatabase> m_db;

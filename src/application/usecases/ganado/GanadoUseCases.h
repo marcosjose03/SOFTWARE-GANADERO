@@ -54,4 +54,14 @@ private:
     std::shared_ptr<Domain::IProduccionRepository> m_produccionRepo;
 };
 
+class GetGanadoByFincaUseCase : public IGetGanadoByFincaUseCase {
+public:
+    explicit GetGanadoByFincaUseCase(
+        std::shared_ptr<Domain::IGanadoRepository> repo);
+    [[nodiscard]] std::vector<GanadoResultDto>
+        execute(const std::string& idFinca) override;
+private:
+    std::shared_ptr<Domain::IGanadoRepository> m_repo;
+};
+
 } // namespace Application

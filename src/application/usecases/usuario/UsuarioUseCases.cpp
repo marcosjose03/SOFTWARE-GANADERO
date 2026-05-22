@@ -127,4 +127,14 @@ bool DeleteUsuarioUseCase::execute(const std::string& id) {
     return m_repo->deleteById(id);
 }
 
+// ─── CheckEmailExistsUseCase ─────────────────────────────────────────────────
+
+CheckEmailExistsUseCase::CheckEmailExistsUseCase(
+    std::shared_ptr<Domain::IUsuarioRepository> repo)
+    : m_repo(std::move(repo)) {}
+
+bool CheckEmailExistsUseCase::execute(const std::string& email) {
+    return m_repo->getByEmail(email).has_value();
+}
+
 } // namespace Application

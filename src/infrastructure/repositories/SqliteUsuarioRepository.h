@@ -14,6 +14,7 @@ public:
     bool                                         insert(const Domain::Usuario& u)           override;
     bool                                         update(const Domain::Usuario& u)           override;
     bool                                         deleteById(const std::string& id)           override;
+    [[nodiscard]] std::optional<Domain::Usuario> getByEmail(const std::string& email) const override;
 
 private:
     std::shared_ptr<SQLiteDatabase> m_db;

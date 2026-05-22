@@ -15,6 +15,7 @@ public:
     virtual bool                                  insert(const Usuario& usuario)              = 0;
     virtual bool                                  update(const Usuario& usuario)              = 0;
     virtual bool                                  deleteById(const std::string& id)           = 0;
+    [[nodiscard]] virtual std::optional<Usuario>  getByEmail(const std::string& email) const = 0;
 };
 
 } // namespace Domain

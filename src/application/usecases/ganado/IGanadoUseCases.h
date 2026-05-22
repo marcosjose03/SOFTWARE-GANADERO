@@ -38,4 +38,11 @@ public:
     [[nodiscard]] virtual bool execute(const std::string& id) = 0;
 };
 
+class IGetGanadoByFincaUseCase {
+public:
+    virtual ~IGetGanadoByFincaUseCase() = default;
+    [[nodiscard]] virtual std::vector<GanadoResultDto>
+        execute(const std::string& idFinca) = 0;
+};
+
 } // namespace Application

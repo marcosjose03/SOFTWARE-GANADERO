@@ -160,3 +160,43 @@ TEST_F(GanadoUseCasesTest, Update) {
     EXPECT_EQ(result->estado, Domain::EstadoGanado::Vendido);
     EXPECT_EQ(result->raza,   "Angus Negro");
 }
+
+// ─── GetGanadoByFinca ────────────────────────────────────────────────────────
+
+TEST_F(GanadoUseCasesTest, GetByFincaRetornaAnimalesDeLaFinca) {
+    auto getByFincaUC = std::make_shared<GetGanadoByFincaUseCase>(ganadoRepo);
+
+    createUC->execute(makeDto());
+    auto dto2 = makeDto();
+    dto2.identificador = 102;
+    createUC->execute(dto2);
+
+    auto result = getByFincaUC->execute(idFinca);
+    EXPECT_EQ(result.size(), 2u);
+    for (const auto& g : result)
+        EXPECT_EQ(g.idFinca, idFinca);
+}
+
+TEST_F(GanadoUseCasesTest, GetByFincaFincaVaciaRetornaVacio) {
+    auto getByFincaUC = std::make_shared<GetGanadoByFincaUseCase>(ganadoRepo);
+    auto result = getByFincaUC->execute(idFinca);
+    EXPECT_TRUE(result.empty());
+}
+
+TEST_F(GanadoUseCasesTest, GetByFincaFincaInexistenteRetornaVacio) {
+    auto getByFincaUC = std::make_shared<GetGanadoByFincaUseCase>(ganadoRepo);
+    auto result = getByFincaUC->execute("finca-inexistente");
+    EXPECT_TRUE(result.empty());
+}
+
+TEST_F(GanadoUseCasesTest, DeleteFincaSoloSiEstaVacia) {
+    auto getByFincaUC = std::make_shared<GetGanadoByFincaUseCase>(ganadoRepo);
+
+    // Con animales — no debe permitirse el delete
+    createUC->execute(makeDto());
+    EXPECT_FALSE(getByFincaUC->execute(idFinca).empty());
+
+    // Sin animales — debe permitirse
+    deleteUC->execute(ganadoRepo->getAll()[0].id);
+    EXPECT_TRUE(getByFincaUC->execute(idFinca).empty());
+}

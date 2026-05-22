@@ -15,6 +15,9 @@ public:
     virtual bool                                insert(const Ganado& ganado)               = 0;
     virtual bool                                update(const Ganado& ganado)               = 0;
     virtual bool                                deleteById(const std::string& id)           = 0;
+    [[nodiscard]] virtual std::vector<Ganado>   getByFinca(const std::string& idFinca) const = 0;
 };
+
+
 
 } // namespace Domain

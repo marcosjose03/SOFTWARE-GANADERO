@@ -140,4 +140,22 @@ bool SqliteUsuarioRepository::deleteById(const std::string& id) {
     return ok;
 }
 
+// ─── getByEmail ─────────────────────────────────────────────────────────────
+
+std::optional<Domain::Usuario>
+SqliteUsuarioRepository::getByEmail(const std::string& email) const {
+    sqlite3_stmt* stmt = nullptr;
+    const char* sql =
+        "SELECT id, nombre, email, contrasena, fecha_registro, fecha_ultimo_backup "
+        "FROM usuarios WHERE email = ?;";
+    if (sqlite3_prepare_v2(m_db->handle(), sql, -1, &stmt, nullptr) != SQLITE_OK)
+        throw std::runtime_error("getByEmail usuarios: prepare falló");
+    sqlite3_bind_text(stmt, 1, email.c_str(), -1, SQLITE_STATIC);
+    std::optional<Domain::Usuario> result;
+    if (sqlite3_step(stmt) == SQLITE_ROW)
+        result = rowToUsuario(stmt);
+    sqlite3_finalize(stmt);
+    return result;
+}
+
 } // namespace Infrastructure

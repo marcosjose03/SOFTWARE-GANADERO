@@ -187,4 +187,24 @@ bool SqliteGanadoRepository::deleteById(const std::string& id) {
     return ok;
 }
 
+// ─── getByFinca ─────────────────────────────────────────────────────────────
+
+std::vector<Domain::Ganado>
+SqliteGanadoRepository::getByFinca(const std::string& idFinca) const {
+    std::vector<Domain::Ganado> result;
+    sqlite3_stmt* stmt = nullptr;
+    const char* sql =
+        "SELECT id, especie, identificador, id_usuario, id_finca, nacimiento, sexo, estado, "
+        "raza, id_padre, id_madre, chapeta, fecha_destete, foto, "
+        "fecha_ultimo_parto, fecha_ultima_palpacion, fecha_inseminacion "
+        "FROM ganado WHERE id_finca = ?;";
+    if (sqlite3_prepare_v2(m_db->handle(), sql, -1, &stmt, nullptr) != SQLITE_OK)
+        throw std::runtime_error("getByFinca ganado: prepare falló");
+    sqlite3_bind_text(stmt, 1, idFinca.c_str(), -1, SQLITE_STATIC);
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+        result.push_back(rowToGanado(stmt));
+    sqlite3_finalize(stmt);
+    return result;
+}
+
 } // namespace Infrastructure

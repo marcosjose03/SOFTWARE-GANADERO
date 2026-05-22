@@ -150,4 +150,18 @@ bool DeleteGanadoUseCase::execute(const std::string& id) {
     return m_ganadoRepo->deleteById(id);
 }
 
+// ─── GetGanadoByFincaUseCase ─────────────────────────────────────────────────
+
+GetGanadoByFincaUseCase::GetGanadoByFincaUseCase(
+    std::shared_ptr<Domain::IGanadoRepository> repo)
+    : m_repo(std::move(repo)) {}
+
+std::vector<GanadoResultDto>
+GetGanadoByFincaUseCase::execute(const std::string& idFinca) {
+    std::vector<GanadoResultDto> result;
+    for (const auto& g : m_repo->getByFinca(idFinca))
+        result.push_back(ganadoToDto(g));
+    return result;
+}
+
 } // namespace Application
