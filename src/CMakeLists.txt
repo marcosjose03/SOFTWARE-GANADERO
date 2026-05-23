@@ -21,6 +21,10 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/finca/FincaUseCases.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/ganado/GanadoUseCases.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/produccion/ProduccionUseCases.cpp
+
+    # Application — session management
+    ${CMAKE_CURRENT_SOURCE_DIR}/application/session/SessionManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/presentation/viewmodels/AppViewModel.cpp
 )
 
 qt_add_executable(SoftwareGanadero ${SOURCES})
@@ -32,6 +36,13 @@ qt_add_qml_module(SoftwareGanadero
     VERSION 1.0
     QML_FILES
         ui/main.qml
+        ui/screens/LoginScreen.qml
+        ui/screens/RegisterScreen.qml
+        ui/screens/MenuScreen.qml
+        ui/screens/InventarioScreen.qml
+        ui/screens/RegistroReproductivoScreen.qml
+        ui/screens/RegistroLecheScreen.qml
+        ui/screens/RegistroPesoScreen.qml
 )
 
 target_include_directories(SoftwareGanadero PRIVATE

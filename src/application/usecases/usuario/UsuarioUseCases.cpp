@@ -1,6 +1,7 @@
 #include "UsuarioUseCases.h"
 #include "infrastructure/utils/UuidGenerator.h"
 #include "infrastructure/utils/DateTimeUtils.h"
+#include <iostream>
 
 namespace Application {
 
@@ -36,7 +37,11 @@ CreateUsuarioUseCase::execute(const CreateUsuarioDto& dto) {
         .fechaUltimoBackup = std::nullopt
     };
 
-    if (!m_repo->insert(u)) return std::nullopt;
+    std::cerr << "Intentando insert id: " << u.id << std::endl;
+    bool ok = m_repo->insert(u);
+    std::cerr << "insert result: " << ok << std::endl;
+
+    if (!ok) return std::nullopt;
     return usuarioToDto(u);
 }
 

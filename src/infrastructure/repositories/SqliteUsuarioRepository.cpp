@@ -1,6 +1,7 @@
 #include "SqliteUsuarioRepository.h"
 #include <sqlite3.h>
 #include <stdexcept>
+#include <iostream>
 
 namespace Infrastructure {
 
@@ -71,13 +72,17 @@ bool SqliteUsuarioRepository::insert(const Domain::Usuario& u) {
         "INSERT INTO usuarios (id, nombre, email, contrasena, fecha_registro, fecha_ultimo_backup) "
         "VALUES (?, ?, ?, ?, ?, ?);";
 
-    if (sqlite3_prepare_v2(m_db->handle(), sql, -1, &stmt, nullptr) != SQLITE_OK)
+    int prepResult = sqlite3_prepare_v2(m_db->handle(), sql, -1, &stmt, nullptr);
+    if (prepResult != SQLITE_OK) {
+        std::cerr << "insert prepare falló: " << sqlite3_errmsg(m_db->handle()) << std::endl;
         return false;
+    }
 
-    sqlite3_bind_text(stmt, 1, u.id.c_str(),     -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, u.nombre.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, u.email.c_str(),  -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, u.id.c_str(),         -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, u.nombre.c_str(),     -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, u.email.c_str(),      -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 4, u.contrasena.c_str(), -1, SQLITE_STATIC);
+
     if (u.fechaRegistro)
         sqlite3_bind_text(stmt, 5, u.fechaRegistro->c_str(), -1, SQLITE_STATIC);
     else
@@ -88,9 +93,13 @@ bool SqliteUsuarioRepository::insert(const Domain::Usuario& u) {
     else
         sqlite3_bind_null(stmt, 6);
 
-    bool ok = sqlite3_step(stmt) == SQLITE_DONE;
+    int stepResult = sqlite3_step(stmt);
+    if (stepResult != SQLITE_DONE)
+        std::cerr << "insert step falló: " << sqlite3_errmsg(m_db->handle())
+                  << " code: " << stepResult << std::endl;
+
     sqlite3_finalize(stmt);
-    return ok;
+    return stepResult == SQLITE_DONE;
 }
 
 // ─── update ─────────────────────────────────────────────────────────────────
