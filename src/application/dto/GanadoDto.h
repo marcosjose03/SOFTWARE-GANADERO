@@ -9,7 +9,7 @@ namespace Application {
 
 struct CreateGanadoDto {
     Domain::Especie              especie;
-    int                          identificador;
+    std::string                  identificador;
     std::string                  idUsuario;
     std::string                  idFinca;
     std::string                  nacimiento;
@@ -21,12 +21,15 @@ struct CreateGanadoDto {
     std::optional<std::string>   chapeta;
     std::optional<std::string>   fechaDestete;
     std::optional<std::vector<uint8_t>> foto;
+    std::optional<std::string>   fechaUltimoParto;
+    std::optional<std::string>   fechaUltimaPalpacion;
+    std::optional<std::string>   fechaInseminacion;
 };
 
 struct UpdateGanadoDto {
     std::string                  id;
     Domain::Especie              especie;
-    int                          identificador;
+    std::string                  identificador;
     std::string                  idFinca;
     std::string                  nacimiento;
     Domain::SexoGanado           sexo;
@@ -45,7 +48,7 @@ struct UpdateGanadoDto {
 struct GanadoResultDto {
     std::string                  id;
     Domain::Especie              especie;
-    int                          identificador;
+    std::string                  identificador;
     std::string                  idUsuario;
     std::string                  idFinca;
     std::string                  nacimiento;

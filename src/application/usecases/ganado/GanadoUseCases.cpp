@@ -57,9 +57,9 @@ CreateGanadoUseCase::execute(const CreateGanadoDto& dto) {
         .chapeta              = dto.chapeta,
         .fechaDestete         = dto.fechaDestete,
         .foto                 = dto.foto,
-        .fechaUltimoParto     = std::nullopt,
-        .fechaUltimaPalpacion = std::nullopt,
-        .fechaInseminacion    = std::nullopt
+        .fechaUltimoParto     = dto.fechaUltimoParto,
+        .fechaUltimaPalpacion = dto.fechaUltimaPalpacion,
+        .fechaInseminacion    = dto.fechaInseminacion
     };
 
     if (!m_ganadoRepo->insert(g)) return std::nullopt;
@@ -162,6 +162,87 @@ GetGanadoByFincaUseCase::execute(const std::string& idFinca) {
     for (const auto& g : m_repo->getByFinca(idFinca))
         result.push_back(ganadoToDto(g));
     return result;
+}
+
+// ─── ValidarProgenitoresUseCase ──────────────────────────────────────────────
+
+ValidarProgenitoresUseCase::ValidarProgenitoresUseCase(
+    std::shared_ptr<Domain::IGanadoRepository> repo)
+    : m_repo(std::move(repo)) {}
+
+std::string ValidarProgenitoresUseCase::execute(
+    const std::string& fechaNacimiento,
+    const std::optional<std::string>& idPadre,
+    const std::optional<std::string>& idMadre) {
+
+    if (fechaNacimiento.empty()) return "";
+
+    if (idPadre.has_value() && !idPadre->empty()) {
+        auto padre = m_repo->getById(*idPadre);
+        if (padre.has_value() && !padre->nacimiento.empty()) {
+            if (fechaNacimiento < padre->nacimiento)
+                return "La fecha de nacimiento del animal no puede ser "
+                       "anterior a la del padre (" + padre->nacimiento + ")";
+        }
+    }
+
+    if (idMadre.has_value() && !idMadre->empty()) {
+        auto madre = m_repo->getById(*idMadre);
+        if (madre.has_value() && !madre->nacimiento.empty()) {
+            if (fechaNacimiento < madre->nacimiento)
+                return "La fecha de nacimiento del animal no puede ser "
+                       "anterior a la de la madre (" + madre->nacimiento + ")";
+        }
+    }
+
+    return "";
+}
+
+// ─── ActualizarFechaPartaMadreUseCase ────────────────────────────────────────
+
+ActualizarFechaPartaMadreUseCase::ActualizarFechaPartaMadreUseCase(
+    std::shared_ptr<Domain::IGanadoRepository>     ganadoRepo,
+    std::shared_ptr<Domain::IProduccionRepository> produccionRepo)
+    : m_ganadoRepo(std::move(ganadoRepo))
+    , m_produccionRepo(std::move(produccionRepo)) {}
+
+void ActualizarFechaPartaMadreUseCase::execute(
+    const std::string& fechaNacimientoAnimal,
+    const std::optional<std::string>& idMadre) {
+
+    if (fechaNacimientoAnimal.empty()) return;
+    if (!idMadre.has_value() || idMadre->empty()) return;
+
+    auto madre = m_ganadoRepo->getById(*idMadre);
+    if (!madre.has_value()) return;
+
+    bool debeActualizar = false;
+
+    if (!madre->fechaUltimoParto.has_value() ||
+        madre->fechaUltimoParto->empty()) {
+        // Campo vacío → actualizar
+        debeActualizar = true;
+    } else if (fechaNacimientoAnimal > *madre->fechaUltimoParto) {
+        // Nacimiento más reciente que último parto → actualizar
+        debeActualizar = true;
+    }
+    // Si son iguales o último parto es más reciente → no hacer nada
+
+    if (!debeActualizar) return;
+
+    // Actualizar en SQLite
+    madre->fechaUltimoParto = fechaNacimientoAnimal;
+    m_ganadoRepo->update(*madre);
+
+    // Actualizar en LMDB — agregar parto
+    auto produccion = m_produccionRepo->getById(*idMadre);
+    if (produccion.has_value()) {
+        Domain::Parto parto{
+            Infrastructure::UuidGenerator::generate(),
+            fechaNacimientoAnimal
+        };
+        m_produccionRepo->addParto(*idMadre, parto);
+    }
 }
 
 } // namespace Application

@@ -41,7 +41,7 @@ protected:
         return Ganado{
             .id            = id,
             .especie       = Domain::Especie::Bovino,
-            .identificador = 101,
+            .identificador = "101",
             .idUsuario     = "user-001",
             .idFinca       = "finca-001",
             .nacimiento    = "2020-05-10",
@@ -66,7 +66,7 @@ TEST_F(SqliteGanadoRepositoryTest, InsertAndGetById) {
     auto result = repo->getById("ganado-001");
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->especie,       Domain::Especie::Bovino);
-    EXPECT_EQ(result->identificador, 101);
+    EXPECT_EQ(result->identificador, "101");
     EXPECT_EQ(result->sexo,          Domain::SexoGanado::Hembra);
     EXPECT_EQ(result->raza,          "Holstein Negro");
 }

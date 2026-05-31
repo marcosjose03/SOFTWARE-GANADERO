@@ -10,7 +10,7 @@ namespace Domain {
 struct Ganado {
     std::string              id;
     Especie                  especie;
-    int                      identificador;
+    std::string              identificador;
     std::string              idUsuario;
     std::string              idFinca;
     std::string              nacimiento;

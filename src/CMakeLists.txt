@@ -43,6 +43,10 @@ qt_add_qml_module(SoftwareGanadero
         ui/screens/RegistroReproductivoScreen.qml
         ui/screens/RegistroLecheScreen.qml
         ui/screens/RegistroPesoScreen.qml
+        ui/screens/CalendarPopup.qml
+        ui/screens/EditarCampoModal.qml
+        ui/screens/NuevoAnimalModal.qml
+        ui/screens/DetalleAnimalComponent.qml
 )
 
 target_include_directories(SoftwareGanadero PRIVATE

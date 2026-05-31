@@ -11,33 +11,35 @@
 namespace Presentation {
 
 AppViewModel::AppViewModel(
-    std::shared_ptr<Application::SessionManager>           session,
-    std::shared_ptr<Application::ILoginUseCase>            loginUC,
-    std::shared_ptr<Application::ICreateUsuarioUseCase>    createUsuarioUC,
-    std::shared_ptr<Application::ICheckEmailExistsUseCase> checkEmailUC,
-    std::shared_ptr<Application::ICreateFincaUseCase>      createFincaUC,
-    std::shared_ptr<Application::IGetAllFincasUseCase>     getAllFincasUC,
-    std::shared_ptr<Application::IGetFincaByIdUseCase>     getFincaByIdUC,
-    std::shared_ptr<Application::IUpdateFincaUseCase>      updateFincaUC,
-    std::shared_ptr<Application::IDeleteFincaUseCase>      deleteFincaUC,
-    std::shared_ptr<Application::ICreateGanadoUseCase>     createGanadoUC,
-    std::shared_ptr<Application::IGetAllGanadoUseCase>     getAllGanadoUC,
-    std::shared_ptr<Application::IGetGanadoByIdUseCase>    getGanadoByIdUC,
-    std::shared_ptr<Application::IUpdateGanadoUseCase>     updateGanadoUC,
-    std::shared_ptr<Application::IDeleteGanadoUseCase>     deleteGanadoUC,
-    std::shared_ptr<Application::IGetGanadoByFincaUseCase> getByFincaUC,
-    std::shared_ptr<Application::IGetProduccionUseCase>    getProduccionUC,
-    std::shared_ptr<Application::IUpdatePrenezUseCase>     updatePrenezUC,
-    std::shared_ptr<Application::IUpdateOrdenoUseCase>     updateOrdenoUC,
-    std::shared_ptr<Application::IAddPartoUseCase>         addPartoUC,
-    std::shared_ptr<Application::IUpdatePartoUseCase>      updatePartoUC,
-    std::shared_ptr<Application::IDeletePartoUseCase>      deletePartoUC,
-    std::shared_ptr<Application::IAddRegistroLecheUseCase>    addLecheUC,
-    std::shared_ptr<Application::IUpdateRegistroLecheUseCase> updateLecheUC,
-    std::shared_ptr<Application::IDeleteRegistroLecheUseCase> deleteLecheUC,
-    std::shared_ptr<Application::IAddRegistroCarneUseCase>    addCarneUC,
-    std::shared_ptr<Application::IUpdateRegistroCarneUseCase> updateCarneUC,
-    std::shared_ptr<Application::IDeleteRegistroCarneUseCase> deleteCarneUC,
+    std::shared_ptr<Application::SessionManager>                   session,
+    std::shared_ptr<Application::ILoginUseCase>                    loginUC,
+    std::shared_ptr<Application::ICreateUsuarioUseCase>            createUsuarioUC,
+    std::shared_ptr<Application::ICheckEmailExistsUseCase>         checkEmailUC,
+    std::shared_ptr<Application::ICreateFincaUseCase>              createFincaUC,
+    std::shared_ptr<Application::IGetAllFincasUseCase>             getAllFincasUC,
+    std::shared_ptr<Application::IGetFincaByIdUseCase>             getFincaByIdUC,
+    std::shared_ptr<Application::IUpdateFincaUseCase>              updateFincaUC,
+    std::shared_ptr<Application::IDeleteFincaUseCase>              deleteFincaUC,
+    std::shared_ptr<Application::ICreateGanadoUseCase>             createGanadoUC,
+    std::shared_ptr<Application::IGetAllGanadoUseCase>             getAllGanadoUC,
+    std::shared_ptr<Application::IGetGanadoByIdUseCase>            getGanadoByIdUC,
+    std::shared_ptr<Application::IUpdateGanadoUseCase>             updateGanadoUC,
+    std::shared_ptr<Application::IDeleteGanadoUseCase>             deleteGanadoUC,
+    std::shared_ptr<Application::IGetGanadoByFincaUseCase>         getByFincaUC,
+    std::shared_ptr<Application::IValidarProgenitoresUseCase>      validarProgenitoresUC,
+    std::shared_ptr<Application::IActualizarFechaPartaMadreUseCase> actualizarPartaMadreUC,
+    std::shared_ptr<Application::IGetProduccionUseCase>            getProduccionUC,
+    std::shared_ptr<Application::IUpdatePrenezUseCase>             updatePrenezUC,
+    std::shared_ptr<Application::IUpdateOrdenoUseCase>             updateOrdenoUC,
+    std::shared_ptr<Application::IAddPartoUseCase>                 addPartoUC,
+    std::shared_ptr<Application::IUpdatePartoUseCase>              updatePartoUC,
+    std::shared_ptr<Application::IDeletePartoUseCase>              deletePartoUC,
+    std::shared_ptr<Application::IAddRegistroLecheUseCase>         addLecheUC,
+    std::shared_ptr<Application::IUpdateRegistroLecheUseCase>      updateLecheUC,
+    std::shared_ptr<Application::IDeleteRegistroLecheUseCase>      deleteLecheUC,
+    std::shared_ptr<Application::IAddRegistroCarneUseCase>         addCarneUC,
+    std::shared_ptr<Application::IUpdateRegistroCarneUseCase>      updateCarneUC,
+    std::shared_ptr<Application::IDeleteRegistroCarneUseCase>      deleteCarneUC,
     QObject* parent)
     : QObject(parent)
     , m_session(std::move(session))
@@ -55,6 +57,8 @@ AppViewModel::AppViewModel(
     , m_updateGanadoUC(std::move(updateGanadoUC))
     , m_deleteGanadoUC(std::move(deleteGanadoUC))
     , m_getByFincaUC(std::move(getByFincaUC))
+    , m_validarProgenitoresUC(std::move(validarProgenitoresUC))
+    , m_actualizarPartaMadreUC(std::move(actualizarPartaMadreUC))
     , m_getProduccionUC(std::move(getProduccionUC))
     , m_updatePrenezUC(std::move(updatePrenezUC))
     , m_updateOrdenoUC(std::move(updateOrdenoUC))
@@ -68,7 +72,6 @@ AppViewModel::AppViewModel(
     , m_updateCarneUC(std::move(updateCarneUC))
     , m_deleteCarneUC(std::move(deleteCarneUC))
 {
-    // Determinar pantalla inicial
     m_currentScreen = m_session->isLoggedIn() ? "menu" : "login";
 }
 
@@ -142,6 +145,15 @@ void AppViewModel::logout() {
     m_session->logout();
     emit sessionChanged();
     setScreen("login");
+}
+
+// Helper para resolver identificador desde UUID
+static QString resolverIdentificador(
+    const std::optional<std::string>& idOpt,
+    const std::shared_ptr<Application::IGetGanadoByIdUseCase>& getByIdUC) {
+    if (!idOpt || idOpt->empty()) return "";
+    auto g = getByIdUC->execute(*idOpt);
+    return g.has_value() ? QString::fromStdString(g->identificador) : "";
 }
 
 // ─── Finca ────────────────────────────────────────────────────────────────────
@@ -223,14 +235,16 @@ QVariantList AppViewModel::getGanadoByFinca(const QString& idFinca) {
         QVariantMap map;
         map["id"]            = QString::fromStdString(g.id);
         map["especie"]       = QString::fromStdString(Domain::especieToString(g.especie));
-        map["identificador"] = g.identificador;
+        map[QStringLiteral("identificador")] = QString::fromStdString(g.identificador);
         map["sexo"]          = QString::fromStdString(Domain::sexoToString(g.sexo));
         map["estado"]        = QString::fromStdString(Domain::estadoToString(g.estado));
         map["raza"]          = g.raza ? QString::fromStdString(*g.raza) : "";
         map["nacimiento"]    = QString::fromStdString(g.nacimiento);
         map["idFinca"]       = QString::fromStdString(g.idFinca);
-        map["padre"]         = g.idPadre ? QString::fromStdString(*g.idPadre) : "";
-        map["madre"]         = g.idMadre ? QString::fromStdString(*g.idMadre) : "";
+        map[QStringLiteral("padre")]              = g.idPadre ? QString::fromStdString(*g.idPadre) : "";
+        map[QStringLiteral("padreIdentificador")] = resolverIdentificador(g.idPadre, m_getGanadoByIdUC);
+        map[QStringLiteral("madre")]              = g.idMadre ? QString::fromStdString(*g.idMadre) : "";
+        map[QStringLiteral("madreIdentificador")] = resolverIdentificador(g.idMadre, m_getGanadoByIdUC);
         map["chapeta"]       = g.chapeta ? QString::fromStdString(*g.chapeta) : "";
         map["fechaDestete"]  = g.fechaDestete ? QString::fromStdString(*g.fechaDestete) : "";
         map["fechaUltimoParto"]     = g.fechaUltimoParto
@@ -250,14 +264,16 @@ QVariantMap AppViewModel::getGanado(const QString& id) {
     QVariantMap map;
     map["id"]            = QString::fromStdString(g->id);
     map["especie"]       = QString::fromStdString(Domain::especieToString(g->especie));
-    map["identificador"] = g->identificador;
+    map[QStringLiteral("identificador")] = QString::fromStdString(g->identificador);
     map["sexo"]          = QString::fromStdString(Domain::sexoToString(g->sexo));
     map["estado"]        = QString::fromStdString(Domain::estadoToString(g->estado));
     map["raza"]          = g->raza ? QString::fromStdString(*g->raza) : "";
     map["nacimiento"]    = QString::fromStdString(g->nacimiento);
     map["idFinca"]       = QString::fromStdString(g->idFinca);
-    map["padre"]         = g->idPadre ? QString::fromStdString(*g->idPadre) : "";
-    map["madre"]         = g->idMadre ? QString::fromStdString(*g->idMadre) : "";
+    map[QStringLiteral("padre")]              = g->idPadre ? QString::fromStdString(*g->idPadre) : "";
+    map[QStringLiteral("padreIdentificador")] = resolverIdentificador(g->idPadre, m_getGanadoByIdUC);
+    map[QStringLiteral("madre")]              = g->idMadre ? QString::fromStdString(*g->idMadre) : "";
+    map[QStringLiteral("madreIdentificador")] = resolverIdentificador(g->idMadre, m_getGanadoByIdUC);
     map["chapeta"]       = g->chapeta ? QString::fromStdString(*g->chapeta) : "";
     map["fechaDestete"]  = g->fechaDestete
         ? QString::fromStdString(*g->fechaDestete) : "";
@@ -277,9 +293,19 @@ bool AppViewModel::createGanado(const QVariantMap& data) {
             return v.isEmpty() ? std::nullopt : std::optional<std::string>(v.toStdString());
         };
 
+        // Validar progenitores
+        auto errorProg = m_validarProgenitoresUC->execute(
+            data[QStringLiteral("nacimiento")].toString().toStdString(),
+            optStr(QStringLiteral("padre")),
+            optStr(QStringLiteral("madre")));
+        if (!errorProg.empty()) {
+            emit errorOccurred(QString::fromStdString(errorProg));
+            return false;
+        }
+
         Application::CreateGanadoDto dto{
             Domain::especieFromString(data[QStringLiteral("especie")].toString().toStdString()),
-            data[QStringLiteral("identificador")].toInt(),
+            data[QStringLiteral("identificador")].toString().toStdString(),
             m_session->userId(),
             data[QStringLiteral("idFinca")].toString().toStdString(),
             data[QStringLiteral("nacimiento")].toString().toStdString(),
@@ -290,13 +316,23 @@ bool AppViewModel::createGanado(const QVariantMap& data) {
             optStr(QStringLiteral("madre")),
             optStr(QStringLiteral("chapeta")),
             optStr(QStringLiteral("fechaDestete")),
-            std::nullopt
+            std::nullopt,
+            optStr(QStringLiteral("fechaUltimoParto")),
+            optStr(QStringLiteral("fechaUltimaPalpacion")),
+            optStr(QStringLiteral("fechaInseminacion"))
         };
+
         auto result = m_createGanadoUC->execute(dto);
         if (!result) {
             emit errorOccurred("No se pudo registrar el animal");
             return false;
         }
+
+        // Actualizar fecha último parto de la madre si aplica
+        m_actualizarPartaMadreUC->execute(
+            data[QStringLiteral("nacimiento")].toString().toStdString(),
+            optStr(QStringLiteral("madre")));
+
         return true;
     } catch (...) {
         emit errorOccurred("Datos del animal inválidos");
@@ -311,10 +347,20 @@ bool AppViewModel::updateGanado(const QVariantMap& data) {
             return v.isEmpty() ? std::nullopt : std::optional<std::string>(v.toStdString());
         };
 
+        // Validar progenitores
+        auto errorProg = m_validarProgenitoresUC->execute(
+            data[QStringLiteral("nacimiento")].toString().toStdString(),
+            optStr(QStringLiteral("padre")),
+            optStr(QStringLiteral("madre")));
+        if (!errorProg.empty()) {
+            emit errorOccurred(QString::fromStdString(errorProg));
+            return false;
+        }
+
         Application::UpdateGanadoDto dto{
             data[QStringLiteral("id")].toString().toStdString(),
             Domain::especieFromString(data[QStringLiteral("especie")].toString().toStdString()),
-            data[QStringLiteral("identificador")].toInt(),
+            data[QStringLiteral("identificador")].toString().toStdString(),
             data[QStringLiteral("idFinca")].toString().toStdString(),
             data[QStringLiteral("nacimiento")].toString().toStdString(),
             Domain::sexoFromString(data[QStringLiteral("sexo")].toString().toStdString()),
@@ -329,9 +375,19 @@ bool AppViewModel::updateGanado(const QVariantMap& data) {
             optStr(QStringLiteral("fechaInseminacion")),
             std::nullopt
         };
+
         bool ok = m_updateGanadoUC->execute(dto);
-        if (!ok) emit errorOccurred("No se pudo actualizar el animal");
-        return ok;
+        if (!ok) {
+            emit errorOccurred("No se pudo actualizar el animal");
+            return false;
+        }
+
+        // Actualizar fecha último parto de la madre si aplica
+        m_actualizarPartaMadreUC->execute(
+            data[QStringLiteral("nacimiento")].toString().toStdString(),
+            optStr(QStringLiteral("madre")));
+
+        return true;
     } catch (...) {
         emit errorOccurred("Datos del animal inválidos");
         return false;
@@ -342,6 +398,49 @@ bool AppViewModel::deleteGanado(const QString& id) {
     bool ok = m_deleteGanadoUC->execute(id.toStdString());
     if (!ok) emit errorOccurred("No se pudo eliminar el animal");
     return ok;
+}
+
+QVariantList AppViewModel::getAllGanado() {
+    QVariantList list;
+    for (const auto& g : m_getAllGanadoUC->execute()) {
+        QVariantMap map;
+        map[QStringLiteral("id")]            = QString::fromStdString(g.id);
+        map[QStringLiteral("especie")]       = QString::fromStdString(Domain::especieToString(g.especie));
+        map[QStringLiteral("identificador")] = QString::fromStdString(g.identificador);
+        map[QStringLiteral("sexo")]          = QString::fromStdString(Domain::sexoToString(g.sexo));
+        map[QStringLiteral("estado")]        = QString::fromStdString(Domain::estadoToString(g.estado));
+        map[QStringLiteral("raza")]          = g.raza ? QString::fromStdString(*g.raza) : "";
+        map[QStringLiteral("nacimiento")]    = QString::fromStdString(g.nacimiento);
+        map[QStringLiteral("idFinca")]       = QString::fromStdString(g.idFinca);
+        map[QStringLiteral("padre")]              = g.idPadre ? QString::fromStdString(*g.idPadre) : "";
+        map[QStringLiteral("padreIdentificador")] = resolverIdentificador(g.idPadre, m_getGanadoByIdUC);
+        map[QStringLiteral("madre")]              = g.idMadre ? QString::fromStdString(*g.idMadre) : "";
+        map[QStringLiteral("madreIdentificador")] = resolverIdentificador(g.idMadre, m_getGanadoByIdUC);
+        map[QStringLiteral("chapeta")]       = g.chapeta ? QString::fromStdString(*g.chapeta) : "";
+        map[QStringLiteral("fechaDestete")]  = g.fechaDestete
+            ? QString::fromStdString(*g.fechaDestete) : "";
+        map[QStringLiteral("fechaUltimoParto")]     = g.fechaUltimoParto
+            ? QString::fromStdString(*g.fechaUltimoParto) : "";
+        map[QStringLiteral("fechaUltimaPalpacion")] = g.fechaUltimaPalpacion
+            ? QString::fromStdString(*g.fechaUltimaPalpacion) : "";
+        map[QStringLiteral("fechaInseminacion")]    = g.fechaInseminacion
+            ? QString::fromStdString(*g.fechaInseminacion) : "";
+        list.append(map);
+    }
+    return list;
+}
+
+QString AppViewModel::validarProgenitores(const QString& fechaNacimiento,
+                                           const QString& idPadre,
+                                           const QString& idMadre) {
+    auto optStr = [](const QString& s) -> std::optional<std::string> {
+        return s.isEmpty() ? std::nullopt : std::optional<std::string>(s.toStdString());
+    };
+    auto error = m_validarProgenitoresUC->execute(
+        fechaNacimiento.toStdString(),
+        optStr(idPadre),
+        optStr(idMadre));
+    return QString::fromStdString(error);
 }
 
 // ─── Producción ───────────────────────────────────────────────────────────────
@@ -452,14 +551,17 @@ QStringList AppViewModel::getEspecies() {
 }
 
 QStringList AppViewModel::getRazasPorEspecie(const QString& especie) {
+    qDebug() << "getRazasPorEspecie llamado con:" << especie;
     try {
         auto e     = Domain::especieFromString(especie.toStdString());
         auto razas = Domain::razasPorEspecie(e);
+        qDebug() << "Razas encontradas:" << razas.size();
         QStringList list;
         for (const auto& r : razas)
             list.append(QString::fromStdString(r));
         return list;
     } catch (...) {
+        qDebug() << "Excepcion en getRazasPorEspecie para:" << especie;
         return {};
     }
 }

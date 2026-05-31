@@ -68,7 +68,7 @@ protected:
     CreateGanadoDto makeDto() {
         return CreateGanadoDto{
             .especie       = Domain::Especie::Bovino,
-            .identificador = 101,
+            .identificador = "101",
             .idUsuario     = idUsuario,
             .idFinca       = idFinca,
             .nacimiento    = "2020-05-10",
@@ -88,7 +88,7 @@ TEST_F(GanadoUseCasesTest, CreateRetornaDto) {
     auto result = createUC->execute(makeDto());
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result->especie,       Domain::Especie::Bovino);
-    EXPECT_EQ(result->identificador, 101);
+    EXPECT_EQ(result->identificador, "101");
     EXPECT_FALSE(result->id.empty());
 }
 
@@ -117,7 +117,7 @@ TEST_F(GanadoUseCasesTest, CreateSinRazaEsValido) {
 TEST_F(GanadoUseCasesTest, GetAll) {
     createUC->execute(makeDto());
     auto dto2 = makeDto();
-    dto2.identificador = 102;
+    dto2.identificador = "102";
     createUC->execute(dto2);
     EXPECT_EQ(getAllUC->execute().size(), 2u);
 }
@@ -126,7 +126,7 @@ TEST_F(GanadoUseCasesTest, GetById) {
     auto created = createUC->execute(makeDto());
     auto result  = getByIdUC->execute(created->id);
     ASSERT_TRUE(result.has_value());
-    EXPECT_EQ(result->identificador, 101);
+    EXPECT_EQ(result->identificador, "101");
 }
 
 TEST_F(GanadoUseCasesTest, GetByIdInexistente) {
@@ -139,7 +139,7 @@ TEST_F(GanadoUseCasesTest, Update) {
     UpdateGanadoDto dto{
         .id            = created->id,
         .especie       = Domain::Especie::Bovino,
-        .identificador = 101,
+        .identificador = "101",
         .idFinca       = idFinca,
         .nacimiento    = "2020-05-10",
         .sexo          = Domain::SexoGanado::Hembra,
@@ -168,7 +168,7 @@ TEST_F(GanadoUseCasesTest, GetByFincaRetornaAnimalesDeLaFinca) {
 
     createUC->execute(makeDto());
     auto dto2 = makeDto();
-    dto2.identificador = 102;
+    dto2.identificador = "102";
     createUC->execute(dto2);
 
     auto result = getByFincaUC->execute(idFinca);
@@ -199,4 +199,114 @@ TEST_F(GanadoUseCasesTest, DeleteFincaSoloSiEstaVacia) {
     // Sin animales — debe permitirse
     deleteUC->execute(ganadoRepo->getAll()[0].id);
     EXPECT_TRUE(getByFincaUC->execute(idFinca).empty());
+}
+
+// ─── ValidarProgenitores ──────────────────────────────────────────────────────
+
+TEST_F(GanadoUseCasesTest, ValidarProgenitores_SinProgenitores_OK) {
+    auto uc = std::make_shared<Application::ValidarProgenitoresUseCase>(ganadoRepo);
+    auto error = uc->execute("2022-01-01", std::nullopt, std::nullopt);
+    EXPECT_TRUE(error.empty());
+}
+
+TEST_F(GanadoUseCasesTest, ValidarProgenitores_PadreAnterior_OK) {
+    auto padre = createUC->execute({
+        Domain::Especie::Bovino, "p001", idUsuario, idFinca,
+        "2018-01-01", Domain::SexoGanado::Macho,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt
+    });
+    auto uc = std::make_shared<Application::ValidarProgenitoresUseCase>(ganadoRepo);
+    auto error = uc->execute("2022-01-01", padre->id, std::nullopt);
+    EXPECT_TRUE(error.empty());
+}
+
+TEST_F(GanadoUseCasesTest, ValidarProgenitores_AnimalAntesQuePadre_Falla) {
+    auto padre = createUC->execute({
+        Domain::Especie::Bovino, "p001", idUsuario, idFinca,
+        "2020-01-01", Domain::SexoGanado::Macho,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt
+    });
+    auto uc = std::make_shared<Application::ValidarProgenitoresUseCase>(ganadoRepo);
+    auto error = uc->execute("2019-01-01", padre->id, std::nullopt);
+    EXPECT_FALSE(error.empty());
+}
+
+TEST_F(GanadoUseCasesTest, ValidarProgenitores_AnimalAntesQueMadre_Falla) {
+    auto madre = createUC->execute({
+        Domain::Especie::Bovino, "m001", idUsuario, idFinca,
+        "2020-06-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt
+    });
+    auto uc = std::make_shared<Application::ValidarProgenitoresUseCase>(ganadoRepo);
+    auto error = uc->execute("2020-01-01", std::nullopt, madre->id);
+    EXPECT_FALSE(error.empty());
+}
+
+// ─── ActualizarFechaPartaMadre ────────────────────────────────────────────────
+
+TEST_F(GanadoUseCasesTest, ActualizarPartaMadre_CampoVacio_Actualiza) {
+    auto madre = createUC->execute({
+        Domain::Especie::Bovino, "m001", idUsuario, idFinca,
+        "2018-01-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt
+    });
+    auto uc = std::make_shared<Application::ActualizarFechaPartaMadreUseCase>(
+        ganadoRepo, produccionRepo);
+    uc->execute("2022-05-01", madre->id);
+    auto madreActualizada = ganadoRepo->getById(madre->id);
+    ASSERT_TRUE(madreActualizada.has_value());
+    EXPECT_EQ(madreActualizada->fechaUltimoParto, "2022-05-01");
+}
+
+TEST_F(GanadoUseCasesTest, ActualizarPartaMadre_NacimientoMasReciente_Actualiza) {
+    auto madre = createUC->execute({
+        Domain::Especie::Bovino, "m001", idUsuario, idFinca,
+        "2018-01-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        "2021-01-01", std::nullopt, std::nullopt
+    });
+    auto uc = std::make_shared<Application::ActualizarFechaPartaMadreUseCase>(
+        ganadoRepo, produccionRepo);
+    uc->execute("2023-03-01", madre->id);
+    auto madreActualizada = ganadoRepo->getById(madre->id);
+    EXPECT_EQ(madreActualizada->fechaUltimoParto, "2023-03-01");
+}
+
+TEST_F(GanadoUseCasesTest, ActualizarPartaMadre_PartaMasReciente_NoActualiza) {
+    auto madre = createUC->execute({
+        Domain::Especie::Bovino, "m001", idUsuario, idFinca,
+        "2018-01-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        "2024-01-01", std::nullopt, std::nullopt
+    });
+    auto uc = std::make_shared<Application::ActualizarFechaPartaMadreUseCase>(
+        ganadoRepo, produccionRepo);
+    uc->execute("2022-03-01", madre->id);
+    auto madreActualizada = ganadoRepo->getById(madre->id);
+    EXPECT_EQ(madreActualizada->fechaUltimoParto, "2024-01-01");
+}
+
+TEST_F(GanadoUseCasesTest, ActualizarPartaMadre_FechasIguales_NoActualiza) {
+    auto madre = createUC->execute({
+        Domain::Especie::Bovino, "m001", idUsuario, idFinca,
+        "2018-01-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        "2022-05-01", std::nullopt, std::nullopt
+    });
+    auto uc = std::make_shared<Application::ActualizarFechaPartaMadreUseCase>(
+        ganadoRepo, produccionRepo);
+    uc->execute("2022-05-01", madre->id);
+    auto madreActualizada = ganadoRepo->getById(madre->id);
+    EXPECT_EQ(madreActualizada->fechaUltimoParto, "2022-05-01");
 }

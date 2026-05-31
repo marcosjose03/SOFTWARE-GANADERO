@@ -78,6 +78,9 @@ int main(int argc, char* argv[]) {
     auto addCarneUC       = std::make_shared<Application::AddRegistroCarneUseCase>(produccionRepo);
     auto updateCarneUC    = std::make_shared<Application::UpdateRegistroCarneUseCase>(produccionRepo);
     auto deleteCarneUC    = std::make_shared<Application::DeleteRegistroCarneUseCase>(produccionRepo);
+    auto validarProgenitoresUC   = std::make_shared<Application::ValidarProgenitoresUseCase>(ganadoRepo);
+    auto actualizarPartaMadreUC  = std::make_shared<Application::ActualizarFechaPartaMadreUseCase>(
+        ganadoRepo, produccionRepo);
 
     // ── Sesión ────────────────────────────────────────────────────────────
     auto session = std::make_shared<Application::SessionManager>();
@@ -103,6 +106,7 @@ int main(int argc, char* argv[]) {
         createFincaUC, getAllFincasUC, getFincaByIdUC, updateFincaUC, deleteFincaUC,
         createGanadoUC, getAllGanadoUC, getGanadoByIdUC, updateGanadoUC, deleteGanadoUC,
         getByFincaUC,
+        validarProgenitoresUC, actualizarPartaMadreUC,
         getProduccionUC, updatePrenezUC, updateOrdenoUC,
         addPartoUC, updatePartoUC, deletePartoUC,
         addLecheUC, updateLecheUC, deleteLecheUC,

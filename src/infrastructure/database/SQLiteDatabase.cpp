@@ -54,7 +54,7 @@ void SQLiteDatabase::initSchema() {
         CREATE TABLE IF NOT EXISTS ganado (
             id                    TEXT NOT NULL PRIMARY KEY,
             especie               TEXT NOT NULL,
-            identificador         INTEGER NOT NULL,
+            identificador         TEXT NOT NULL,
             id_usuario            TEXT NOT NULL,
             id_finca              TEXT NOT NULL,
             nacimiento            TEXT NOT NULL,

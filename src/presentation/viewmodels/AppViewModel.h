@@ -11,6 +11,7 @@
 #include "application/usecases/finca/FincaUseCases.h"
 #include "application/usecases/ganado/GanadoUseCases.h"
 #include "application/usecases/produccion/ProduccionUseCases.h"
+#include "application/usecases/ganado/IGanadoUseCases.h"
 
 namespace Presentation {
 
@@ -42,6 +43,8 @@ public:
         std::shared_ptr<Application::IUpdateGanadoUseCase>     updateGanadoUC,
         std::shared_ptr<Application::IDeleteGanadoUseCase>     deleteGanadoUC,
         std::shared_ptr<Application::IGetGanadoByFincaUseCase> getByFincaUC,
+        std::shared_ptr<Application::IValidarProgenitoresUseCase>      validarProgenitoresUC,
+        std::shared_ptr<Application::IActualizarFechaPartaMadreUseCase> actualizarPartaMadreUC,
         std::shared_ptr<Application::IGetProduccionUseCase>    getProduccionUC,
         std::shared_ptr<Application::IUpdatePrenezUseCase>     updatePrenezUC,
         std::shared_ptr<Application::IUpdateOrdenoUseCase>     updateOrdenoUC,
@@ -99,6 +102,10 @@ public:
     Q_INVOKABLE bool         createGanado(const QVariantMap& data);
     Q_INVOKABLE bool         updateGanado(const QVariantMap& data);
     Q_INVOKABLE bool         deleteGanado(const QString& id);
+    Q_INVOKABLE QVariantList getAllGanado();
+    Q_INVOKABLE QString validarProgenitores(const QString& fechaNacimiento,
+                                             const QString& idPadre,
+                                             const QString& idMadre);
 
     // ── Slots de producción ───────────────────────────────────────────────
     Q_INVOKABLE QVariantMap  getProduccion(const QString& id);
@@ -134,6 +141,7 @@ public:
     Q_INVOKABLE QStringList getRazasPorEspecie(const QString& especie);
     Q_INVOKABLE QStringList getSexos();
     Q_INVOKABLE QStringList getEstados();
+    
 
 signals:
     void currentScreenChanged();
@@ -156,6 +164,8 @@ private:
     std::shared_ptr<Application::IUpdateGanadoUseCase>     m_updateGanadoUC;
     std::shared_ptr<Application::IDeleteGanadoUseCase>     m_deleteGanadoUC;
     std::shared_ptr<Application::IGetGanadoByFincaUseCase> m_getByFincaUC;
+    std::shared_ptr<Application::IValidarProgenitoresUseCase>       m_validarProgenitoresUC;
+    std::shared_ptr<Application::IActualizarFechaPartaMadreUseCase> m_actualizarPartaMadreUC;
     std::shared_ptr<Application::IGetProduccionUseCase>    m_getProduccionUC;
     std::shared_ptr<Application::IUpdatePrenezUseCase>     m_updatePrenezUC;
     std::shared_ptr<Application::IUpdateOrdenoUseCase>     m_updateOrdenoUC;

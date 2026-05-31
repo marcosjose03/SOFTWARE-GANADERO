@@ -3,7 +3,8 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Item {
-    anchors.fill: parent
+    width: parent ? parent.width : 1024
+    height: parent ? parent.height : 768
 
     ColumnLayout {
         anchors.centerIn: parent
@@ -18,21 +19,10 @@ Item {
             horizontalAlignment: Text.AlignHCenter
         }
 
-        Button {
-            text: "Herramienta visual"
-            Layout.fillWidth: true
-            enabled: false
-        }
-        Button {
-            text: "Alertas"
-            Layout.fillWidth: true
-            enabled: false
-        }
-        Button {
-            text: "Proyecciones"
-            Layout.fillWidth: true
-            enabled: false
-        }
+        Button { text: "Herramienta visual"; Layout.fillWidth: true; enabled: false }
+        Button { text: "Alertas";            Layout.fillWidth: true; enabled: false }
+        Button { text: "Proyecciones";       Layout.fillWidth: true; enabled: false }
+
         Button {
             text: "Inventario"
             Layout.fillWidth: true

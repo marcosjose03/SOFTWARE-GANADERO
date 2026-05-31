@@ -64,4 +64,29 @@ private:
     std::shared_ptr<Domain::IGanadoRepository> m_repo;
 };
 
+class ValidarProgenitoresUseCase : public IValidarProgenitoresUseCase {
+public:
+    explicit ValidarProgenitoresUseCase(
+        std::shared_ptr<Domain::IGanadoRepository> repo);
+    [[nodiscard]] std::string execute(
+        const std::string& fechaNacimiento,
+        const std::optional<std::string>& idPadre,
+        const std::optional<std::string>& idMadre) override;
+private:
+    std::shared_ptr<Domain::IGanadoRepository> m_repo;
+};
+
+class ActualizarFechaPartaMadreUseCase : public IActualizarFechaPartaMadreUseCase {
+public:
+    ActualizarFechaPartaMadreUseCase(
+        std::shared_ptr<Domain::IGanadoRepository>     ganadoRepo,
+        std::shared_ptr<Domain::IProduccionRepository> produccionRepo);
+    void execute(
+        const std::string& fechaNacimientoAnimal,
+        const std::optional<std::string>& idMadre) override;
+private:
+    std::shared_ptr<Domain::IGanadoRepository>     m_ganadoRepo;
+    std::shared_ptr<Domain::IProduccionRepository> m_produccionRepo;
+};
+
 } // namespace Application

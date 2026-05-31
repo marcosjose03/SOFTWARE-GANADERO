@@ -45,4 +45,22 @@ public:
         execute(const std::string& idFinca) = 0;
 };
 
+class IValidarProgenitoresUseCase {
+public:
+    virtual ~IValidarProgenitoresUseCase() = default;
+    // Retorna string vacío si es válido, o el mensaje de error
+    [[nodiscard]] virtual std::string execute(
+        const std::string& fechaNacimiento,
+        const std::optional<std::string>& idPadre,
+        const std::optional<std::string>& idMadre) = 0;
+};
+
+class IActualizarFechaPartaMadreUseCase {
+public:
+    virtual ~IActualizarFechaPartaMadreUseCase() = default;
+    virtual void execute(
+        const std::string& fechaNacimientoAnimal,
+        const std::optional<std::string>& idMadre) = 0;
+};
+
 } // namespace Application

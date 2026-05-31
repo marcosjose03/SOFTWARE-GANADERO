@@ -34,7 +34,7 @@ protected:
         auto f  = CreateFincaUseCase(fincaRepo).execute({"Finca",100,5,100,u->id});
 
         auto animal = CreateGanadoUseCase(ganadoRepo, produccionRepo).execute({
-            Domain::Especie::Bovino, 101, u->id, f->id,
+            Domain::Especie::Bovino, "101", u->id, f->id,
             "2020-01-01", Domain::SexoGanado::Hembra,
             Domain::EstadoGanado::Activo, "Holstein Negro",
             std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt

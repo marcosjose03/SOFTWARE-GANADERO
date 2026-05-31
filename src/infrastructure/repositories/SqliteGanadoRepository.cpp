@@ -31,7 +31,7 @@ Domain::Ganado SqliteGanadoRepository::rowToGanado(sqlite3_stmt* stmt) const {
 
     g.id            = col(0);
     g.especie       = Domain::especieFromString(col(1));
-    g.identificador = sqlite3_column_int(stmt, 2);
+    g.identificador = col(2);
     g.idUsuario     = col(3);
     g.idFinca       = col(4);
     g.nacimiento    = col(5);
@@ -108,7 +108,7 @@ bool SqliteGanadoRepository::insert(const Domain::Ganado& g) {
 
     sqlite3_bind_text(stmt,  1, g.id.c_str(),          -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, Domain::especieToString(g.especie).c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int (stmt,  3, g.identificador);
+    sqlite3_bind_text(stmt, 3, g.identificador.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  4, g.idUsuario.c_str(),    -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  5, g.idFinca.c_str(),      -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  6, g.nacimiento.c_str(),   -1, SQLITE_STATIC);
@@ -147,7 +147,7 @@ bool SqliteGanadoRepository::update(const Domain::Ganado& g) {
         return false;
 
     sqlite3_bind_text(stmt, 1, Domain::especieToString(g.especie).c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int (stmt,  2, g.identificador);
+    sqlite3_bind_text(stmt, 2, g.identificador.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  3, g.idUsuario.c_str(),  -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  4, g.idFinca.c_str(),    -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt,  5, g.nacimiento.c_str(), -1, SQLITE_STATIC);

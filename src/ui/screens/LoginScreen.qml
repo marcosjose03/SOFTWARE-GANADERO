@@ -3,27 +3,29 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Item {
-    anchors.fill: parent
+    width: parent ? parent.width : 1024
+    height: parent ? parent.height : 768
+
+    Connections {
+        target: appViewModel
+        function onErrorOccurred(message) {
+            errorText.text = message
+        }
+    }
 
     ColumnLayout {
         anchors.centerIn: parent
         width: 300
         spacing: 12
 
-        Text {
-            text: "Correo electrónico"
-            Layout.fillWidth: true
-        }
+        Text { text: "Correo electrónico"; Layout.fillWidth: true }
         TextField {
             id: emailField
             Layout.fillWidth: true
             placeholderText: "correo@ejemplo.com"
         }
 
-        Text {
-            text: "Contraseña"
-            Layout.fillWidth: true
-        }
+        Text { text: "Contraseña"; Layout.fillWidth: true }
         TextField {
             id: passField
             Layout.fillWidth: true
