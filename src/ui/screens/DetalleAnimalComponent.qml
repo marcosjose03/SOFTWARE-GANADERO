@@ -325,6 +325,7 @@ Item {
                 Row {
                     width: camposColumn.width
                     spacing: 8
+                    visible: animalData && animalData.sexo === "Hembra"
                     Text { text: "Preñez:"; width: 150 }
                     Switch {
                         checked: produccionData ? produccionData.prenez : false
@@ -335,6 +336,7 @@ Item {
                 Row {
                     width: camposColumn.width
                     spacing: 8
+                    visible: animalData && animalData.sexo === "Hembra"
                     Text { text: "Ordeño:"; width: 150 }
                     Switch {
                         checked: produccionData ? produccionData.ordeno : false
