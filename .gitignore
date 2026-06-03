@@ -1,0 +1,8 @@
+build/
+.cmake/
+CMakeUserPresets.json
+*.exe
+*.obj
+*.o
+ganadero.db
+ganadero_lmdb/
