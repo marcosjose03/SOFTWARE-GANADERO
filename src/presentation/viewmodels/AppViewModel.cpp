@@ -7,6 +7,11 @@
 #include "infrastructure/utils/UuidGenerator.h"
 #include <QDebug>
 #include "application/usecases/usuario/UsuarioUseCases.h"
+#include <QImage>
+#include <QBuffer>
+#include <QByteArray>
+#include <QFile>
+#include <stdexcept>
 
 namespace Presentation {
 
@@ -154,6 +159,89 @@ static QString resolverIdentificador(
     if (!idOpt || idOpt->empty()) return "";
     auto g = getByIdUC->execute(*idOpt);
     return g.has_value() ? QString::fromStdString(g->identificador) : "";
+}
+
+QString AppViewModel::getFotoBase64(const QString& id) {
+    auto g = m_getGanadoByIdUC->execute(id.toStdString());
+    if (!g || !g->foto.has_value() || g->foto->empty())
+        return "";
+    QByteArray bytes(
+        reinterpret_cast<const char*>(g->foto->data()),
+        static_cast<qsizetype>(g->foto->size()));
+    return QString::fromLatin1(bytes.toBase64());
+}
+
+bool AppViewModel::updateFoto(const QString& id, const QString& base64Data) {
+    auto g = m_getGanadoByIdUC->execute(id.toStdString());
+    if (!g) return false;
+
+    QByteArray bytes = QByteArray::fromBase64(base64Data.toLatin1());
+    QImage img;
+    img.loadFromData(bytes);
+    if (img.isNull()) return false;
+
+    QImage scaled = img.scaled(255, 255,
+        Qt::KeepAspectRatioByExpanding,
+        Qt::SmoothTransformation).copy(0, 0, 255, 255);
+
+    QByteArray out;
+    QBuffer buf(&out);
+    buf.open(QIODevice::WriteOnly);
+    scaled.save(&buf, "PNG");
+
+    auto existing = m_getGanadoByIdUC->execute(id.toStdString());
+    if (!existing) return false;
+
+    Application::UpdateGanadoDto dto{
+        existing->id,
+        existing->especie,
+        existing->identificador,
+        existing->idFinca,
+        existing->nacimiento,
+        existing->sexo,
+        existing->estado,
+        existing->raza,
+        existing->idPadre,
+        existing->idMadre,
+        existing->chapeta,
+        existing->fechaDestete,
+        existing->fechaUltimoParto,
+        existing->fechaUltimaPalpacion,
+        existing->fechaInseminacion,
+        std::vector<uint8_t>(out.begin(), out.end())
+    };
+    return m_updateGanadoUC->execute(dto);
+}
+
+QString AppViewModel::leerArchivoBase64(const QString& filePath) {
+    QString path = filePath;
+    // Quitar prefijo file:///
+    if (path.startsWith("file:///"))
+        path = path.mid(8);
+    else if (path.startsWith("file://"))
+        path = path.mid(7);
+
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly)) return "";
+
+    QByteArray bytes = file.readAll();
+    file.close();
+
+    // Redimensionar a 255x255
+    QImage img;
+    img.loadFromData(bytes);
+    if (img.isNull()) return "";
+
+    QImage scaled = img.scaled(255, 255,
+        Qt::KeepAspectRatioByExpanding,
+        Qt::SmoothTransformation).copy(0, 0, 255, 255);
+
+    QByteArray out;
+    QBuffer buf(&out);
+    buf.open(QIODevice::WriteOnly);
+    scaled.save(&buf, "PNG");
+
+    return QString::fromLatin1(out.toBase64());
 }
 
 // ─── Finca ────────────────────────────────────────────────────────────────────
@@ -334,6 +422,9 @@ bool AppViewModel::createGanado(const QVariantMap& data) {
             optStr(QStringLiteral("madre")));
 
         return true;
+    } catch (const std::invalid_argument& e) {
+        emit errorOccurred(QString::fromStdString(e.what()));
+        return false;
     } catch (...) {
         emit errorOccurred("Datos del animal inválidos");
         return false;
@@ -388,6 +479,9 @@ bool AppViewModel::updateGanado(const QVariantMap& data) {
             optStr(QStringLiteral("madre")));
 
         return true;
+    } catch (const std::invalid_argument& e) {
+        emit errorOccurred(QString::fromStdString(e.what()));
+        return false;
     } catch (...) {
         emit errorOccurred("Datos del animal inválidos");
         return false;

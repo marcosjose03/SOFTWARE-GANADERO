@@ -310,3 +310,95 @@ TEST_F(GanadoUseCasesTest, ActualizarPartaMadre_FechasIguales_NoActualiza) {
     auto madreActualizada = ganadoRepo->getById(madre->id);
     EXPECT_EQ(madreActualizada->fechaUltimoParto, "2022-05-01");
 }
+
+// ─── Validación fechas relativas al nacimiento ────────────────────────────
+
+TEST_F(GanadoUseCasesTest, Create_FechaDesteteAnteriorNacimiento_Falla) {
+    Application::CreateGanadoDto dto{
+        Domain::Especie::Bovino, "v001", idUsuario, idFinca,
+        "2022-06-01", Domain::SexoGanado::Macho,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt,
+        "2022-01-01",  // destete anterior al nacimiento
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt
+    };
+    EXPECT_THROW(createUC->execute(dto), std::invalid_argument);
+}
+
+TEST_F(GanadoUseCasesTest, Create_FechaUltimoPartoAnteriorNacimiento_Falla) {
+    Application::CreateGanadoDto dto{
+        Domain::Especie::Bovino, "v002", idUsuario, idFinca,
+        "2022-06-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt,
+        "2022-01-01",  // ultimo parto anterior al nacimiento
+        std::nullopt, std::nullopt
+    };
+    EXPECT_THROW(createUC->execute(dto), std::invalid_argument);
+}
+
+TEST_F(GanadoUseCasesTest, Create_FechaUltimaPalpacionAnteriorNacimiento_Falla) {
+    Application::CreateGanadoDto dto{
+        Domain::Especie::Bovino, "v003", idUsuario, idFinca,
+        "2022-06-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt,
+        "2022-01-01",  // palpacion anterior al nacimiento
+        std::nullopt
+    };
+    EXPECT_THROW(createUC->execute(dto), std::invalid_argument);
+}
+
+TEST_F(GanadoUseCasesTest, Create_FechaInseminacionAnteriorNacimiento_Falla) {
+    Application::CreateGanadoDto dto{
+        Domain::Especie::Bovino, "v004", idUsuario, idFinca,
+        "2022-06-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt,
+        "2022-01-01"  // inseminacion anterior al nacimiento
+    };
+    EXPECT_THROW(createUC->execute(dto), std::invalid_argument);
+}
+
+TEST_F(GanadoUseCasesTest, Create_FechasPosterioresNacimiento_OK) {
+    Application::CreateGanadoDto dto{
+        Domain::Especie::Bovino, "v005", idUsuario, idFinca,
+        "2020-01-01", Domain::SexoGanado::Hembra,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt,
+        "2020-06-01",  // destete posterior
+        std::nullopt,
+        "2021-01-01",  // ultimo parto posterior
+        "2021-03-01",  // palpacion posterior
+        "2021-06-01"   // inseminacion posterior
+    };
+    EXPECT_NO_THROW({
+        auto result = createUC->execute(dto);
+        EXPECT_TRUE(result.has_value());
+    });
+}
+
+TEST_F(GanadoUseCasesTest, Update_FechaDesteteAnteriorNacimiento_Falla) {
+    auto animal = createUC->execute({
+        Domain::Especie::Bovino, "u001", idUsuario, idFinca,
+        "2022-06-01", Domain::SexoGanado::Macho,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt
+    });
+    ASSERT_TRUE(animal.has_value());
+
+    Application::UpdateGanadoDto dto{
+        animal->id,
+        Domain::Especie::Bovino, "u001", idFinca,
+        "2022-06-01", Domain::SexoGanado::Macho,
+        Domain::EstadoGanado::Activo, std::nullopt,
+        std::nullopt, std::nullopt, std::nullopt,
+        "2022-01-01",  // destete anterior al nacimiento
+        std::nullopt, std::nullopt, std::nullopt, std::nullopt
+    };
+    EXPECT_THROW(updateUC->execute(dto), std::invalid_argument);
+}

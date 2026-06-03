@@ -59,6 +59,7 @@ struct GanadoResultDto {
     std::optional<std::string>   idMadre;
     std::optional<std::string>   chapeta;
     std::optional<std::string>   fechaDestete;
+    std::optional<std::vector<uint8_t>> foto;
     std::optional<std::string>   fechaUltimoParto;
     std::optional<std::string>   fechaUltimaPalpacion;
     std::optional<std::string>   fechaInseminacion;

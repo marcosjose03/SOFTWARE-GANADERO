@@ -1,20 +1,29 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import Qt.labs.platform 1.1 as Platform
 
 Item {
     id: vista
     width: parent ? parent.width : 1024
     height: parent ? parent.height : 768
 
+    Connections {
+        target: appViewModel
+        function onErrorOccurred(message) {
+            errorText.text = message
+        }
+    }
+
     signal animalRegistrado()
     signal volver()
 
-    property var  fincasList:         []
-    property var  razasList:          []
-    property var  todosAnimales:      []
-    property bool esHembra:           false
+    property var  fincasList:          []
+    property var  razasList:           []
+    property var  todosAnimales:       []
+    property bool esHembra:            false
     property bool especieSeleccionada: false
+    property string fotoBase64:        ""
 
     function cargar() {
         fincasList    = appViewModel.getFincas()
@@ -44,6 +53,8 @@ Item {
         esHembra                        = false
         especieSeleccionada             = false
         razasList                       = []
+        fotoBase64                      = ""
+        fotoPreview.source              = ""
         calNac.visible                  = false
         calDes.visible                  = false
         calPar.visible                  = false
@@ -61,6 +72,20 @@ Item {
     }
 
     Component.onCompleted: cargar()
+
+    Platform.FileDialog {
+        id: fotoDialog
+        title: "Seleccionar imagen"
+        nameFilters: ["Imágenes (*.png *.jpg *.jpeg *.bmp)"]
+        onAccepted: {
+            var path = fotoDialog.file.toString()
+            var b64  = appViewModel.leerArchivoBase64(path)
+            if (b64 !== "") {
+                vista.fotoBase64   = b64
+                fotoPreview.source = "data:image/png;base64," + b64
+            }
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -573,6 +598,46 @@ Item {
                     }
                 }
 
+                // ── Foto ──────────────────────────────────────────────────
+                Text {
+                    text: "Foto"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                Row {
+                    width: parent.width
+                    spacing: 8
+
+                    Rectangle {
+                        width: 100
+                        height: 100
+                        border.color: "#ccc"
+                        color: "#f5f5f5"
+
+                        Image {
+                            id: fotoPreview
+                            anchors.fill: parent
+                            fillMode: Image.PreserveAspectCrop
+                            source: ""
+                            visible: source !== ""
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "Sin foto"
+                            color: "#999"
+                            visible: fotoPreview.source === ""
+                        }
+                    }
+
+                    Button {
+                        text: "Seleccionar foto"
+                        anchors.verticalCenter: parent.verticalCenter
+                        enabled: vista.especieSeleccionada
+                        onClicked: fotoDialog.open()
+                    }
+                }
+
                 Text {
                     id: errorText
                     color: "red"
@@ -624,11 +689,20 @@ Item {
                         }
 
                         if (appViewModel.createGanado(data)) {
+                            // Si hay foto, actualizarla después del create
+                            if (vista.fotoBase64 !== "") {
+                                // Obtener el último animal creado por identificador
+                                var todos = appViewModel.getAllGanado()
+                                for (var i = 0; i < todos.length; i++) {
+                                    if (todos[i].identificador === identificadorField.text) {
+                                        appViewModel.updateFoto(todos[i].id, vista.fotoBase64)
+                                        break
+                                    }
+                                }
+                            }
                             vista.animalRegistrado()
                             vista.volver()
-                        } else {
-                            errorText.text = "No se pudo registrar el animal"
-                        }
+                        } 
                     }
                 }
 

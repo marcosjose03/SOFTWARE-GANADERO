@@ -4,6 +4,34 @@
 
 namespace Application {
 
+static std::string validarFechasRelativas(
+    const std::string& nacimiento,
+    const std::optional<std::string>& fechaDestete,
+    const std::optional<std::string>& fechaUltimoParto,
+    const std::optional<std::string>& fechaUltimaPalpacion,
+    const std::optional<std::string>& fechaInseminacion) {
+
+    if (nacimiento.empty()) return "";
+
+    if (fechaDestete.has_value() && !fechaDestete->empty()
+            && *fechaDestete < nacimiento)
+        return "La fecha de destete no puede ser anterior a la fecha de nacimiento";
+
+    if (fechaUltimoParto.has_value() && !fechaUltimoParto->empty()
+            && *fechaUltimoParto < nacimiento)
+        return "La fecha de último parto no puede ser anterior a la fecha de nacimiento";
+
+    if (fechaUltimaPalpacion.has_value() && !fechaUltimaPalpacion->empty()
+            && *fechaUltimaPalpacion < nacimiento)
+        return "La fecha de última palpación no puede ser anterior a la fecha de nacimiento";
+
+    if (fechaInseminacion.has_value() && !fechaInseminacion->empty()
+            && *fechaInseminacion < nacimiento)
+        return "La fecha de inseminación no puede ser anterior a la fecha de nacimiento";
+
+    return "";
+}
+
 static GanadoResultDto ganadoToDto(const Domain::Ganado& g) {
     return GanadoResultDto{
         .id                   = g.id,
@@ -19,6 +47,7 @@ static GanadoResultDto ganadoToDto(const Domain::Ganado& g) {
         .idMadre              = g.idMadre,
         .chapeta              = g.chapeta,
         .fechaDestete         = g.fechaDestete,
+        .foto                 = g.foto,
         .fechaUltimoParto     = g.fechaUltimoParto,
         .fechaUltimaPalpacion = g.fechaUltimaPalpacion,
         .fechaInseminacion    = g.fechaInseminacion
@@ -35,6 +64,20 @@ CreateGanadoUseCase::CreateGanadoUseCase(
 
 std::optional<GanadoResultDto>
 CreateGanadoUseCase::execute(const CreateGanadoDto& dto) {
+    // Validar fechas relativas
+    if (dto.raza.has_value() &&
+        !Domain::razaEsValidaParaEspecie(*dto.raza, dto.especie))
+        return std::nullopt;
+
+    auto errorFechas = validarFechasRelativas(
+        dto.nacimiento,
+        dto.fechaDestete,
+        dto.fechaUltimoParto,
+        dto.fechaUltimaPalpacion,
+        dto.fechaInseminacion);
+    if (!errorFechas.empty())
+        throw std::invalid_argument(errorFechas);
+
     // Validar raza contra especie
     if (dto.raza.has_value() &&
         !Domain::razaEsValidaParaEspecie(*dto.raza, dto.especie))
@@ -111,6 +154,15 @@ UpdateGanadoUseCase::UpdateGanadoUseCase(
     : m_repo(std::move(repo)) {}
 
 bool UpdateGanadoUseCase::execute(const UpdateGanadoDto& dto) {
+    auto errorFechas = validarFechasRelativas(
+        dto.nacimiento,
+        dto.fechaDestete,
+        dto.fechaUltimoParto,
+        dto.fechaUltimaPalpacion,
+        dto.fechaInseminacion);
+    if (!errorFechas.empty())
+        throw std::invalid_argument(errorFechas);
+
     if (dto.raza.has_value() &&
         !Domain::razaEsValidaParaEspecie(*dto.raza, dto.especie))
         return false;

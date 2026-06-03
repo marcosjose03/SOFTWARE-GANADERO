@@ -53,11 +53,16 @@ target_include_directories(SoftwareGanadero PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+find_package(Qt6 REQUIRED COMPONENTS
+    Core Gui Quick QuickControls2 Charts LabsPlatform
+)
+
 target_link_libraries(SoftwareGanadero PRIVATE
     Qt6::Core
     Qt6::Quick
     Qt6::Gui
     Qt6::QuickControls2
+    Qt6::LabsPlatform
     Qt6::Charts
     SQLite3::SQLite3
     unofficial::lmdb::lmdb

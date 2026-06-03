@@ -106,6 +106,9 @@ public:
     Q_INVOKABLE QString validarProgenitores(const QString& fechaNacimiento,
                                              const QString& idPadre,
                                              const QString& idMadre);
+    Q_INVOKABLE QString getFotoBase64(const QString& id);
+    Q_INVOKABLE bool    updateFoto(const QString& id, const QString& base64Data);
+    Q_INVOKABLE QString leerArchivoBase64(const QString& filePath);
 
     // ── Slots de producción ───────────────────────────────────────────────
     Q_INVOKABLE QVariantMap  getProduccion(const QString& id);
