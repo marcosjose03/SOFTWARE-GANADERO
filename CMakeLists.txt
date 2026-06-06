@@ -89,6 +89,9 @@ set(LMDB_TARGET    ${LMDB_TARGET}    CACHE INTERNAL "")
 
 add_subdirectory(src)
 
+# Link SQLite3 and LMDB here (after add_subdirectory) so FetchContent targets are guaranteed to exist
+target_link_libraries(SoftwareGanadero PRIVATE ${SQLITE3_TARGET} ${LMDB_TARGET})
+
 if(BUILD_TESTING)
     FetchContent_Declare(
         googletest
