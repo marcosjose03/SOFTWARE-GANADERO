@@ -81,7 +81,8 @@ public:
     virtual ~IUpdateRegistroCarneUseCase() = default;
     [[nodiscard]] virtual bool
         execute(const std::string& id,
-                const std::string& fecha,
+                const std::string& fechaOriginal,
+                const std::string& fechaNueva,
                 double nuevoValor) = 0;
 };
 

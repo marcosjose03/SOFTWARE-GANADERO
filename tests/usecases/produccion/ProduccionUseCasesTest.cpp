@@ -193,7 +193,7 @@ TEST_F(ProduccionUseCasesTest, AddRegistroCarne) {
 
 TEST_F(ProduccionUseCasesTest, UpdateRegistroCarne) {
     addCarneUC->execute(idGanado, {"2025-02-01", 320.5});
-    ASSERT_TRUE(updateCarneUC->execute(idGanado, "2025-02-01", 350.0));
+    ASSERT_TRUE(updateCarneUC->execute(idGanado, "2025-02-01", "2025-02-01", 350.0));
     EXPECT_DOUBLE_EQ(getUC->execute(idGanado)->registroCarne[0].valor, 350.0);
 }
 

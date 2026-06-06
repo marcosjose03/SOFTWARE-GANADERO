@@ -176,7 +176,7 @@ TEST_F(LmdbProduccionRepositoryTest, UpdateRegistroCarne) {
     repo->insert(makeProduccion());
     repo->addRegistroCarne("prod-001", {"2025-02-01", 320.5});
 
-    ASSERT_TRUE(repo->updateRegistroCarne("prod-001", "2025-02-01", 350.0));
+    ASSERT_TRUE(repo->updateRegistroCarne("prod-001", "2025-02-01", "2025-02-01", 350.0));
 
     auto result = repo->getById("prod-001");
     EXPECT_DOUBLE_EQ(result->registroCarne[0].valor, 350.0);

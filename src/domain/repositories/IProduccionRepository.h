@@ -35,7 +35,8 @@ public:
     // Registro carne
     virtual bool addRegistroCarne(const std::string& id, const RegistroFecha& r)           = 0;
     virtual bool updateRegistroCarne(const std::string& id,
-                                     const std::string& fecha,
+                                     const std::string& fechaOriginal,
+                                     const std::string& fechaNueva,
                                      double nuevoValor)                                    = 0;
     virtual bool deleteRegistroCarne(const std::string& id, const std::string& fecha)      = 0;
 };

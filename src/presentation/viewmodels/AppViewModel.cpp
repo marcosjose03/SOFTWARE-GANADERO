@@ -637,10 +637,14 @@ bool AppViewModel::addRegistroCarne(const QString& id,
 }
 
 bool AppViewModel::updateRegistroCarne(const QString& id,
-                                        const QString& fecha,
+                                        const QString& fechaOriginal,
+                                        const QString& fechaNueva,
                                         double nuevoValor) {
-    return m_updateCarneUC->execute(id.toStdString(),
-                                    fecha.toStdString(), nuevoValor);
+    return m_updateCarneUC->execute(
+        id.toStdString(),
+        fechaOriginal.toStdString(),
+        fechaNueva.toStdString(),
+        nuevoValor);
 }
 
 bool AppViewModel::deleteRegistroCarne(const QString& id, const QString& fecha) {

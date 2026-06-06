@@ -215,12 +215,14 @@ bool LmdbProduccionRepository::addRegistroCarne(const std::string& id,
 }
 
 bool LmdbProduccionRepository::updateRegistroCarne(const std::string& id,
-                                                    const std::string& fecha,
+                                                    const std::string& fechaOriginal,
+                                                    const std::string& fechaNueva,
                                                     double nuevoValor) {
     auto p = load(id);
     if (!p) return false;
     for (auto& r : p->registroCarne) {
-        if (r.fecha == fecha) {
+        if (r.fecha == fechaOriginal) {
+            r.fecha = fechaNueva;
             r.valor = nuevoValor;
             return save(*p);
         }

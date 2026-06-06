@@ -149,9 +149,10 @@ UpdateRegistroCarneUseCase::UpdateRegistroCarneUseCase(
     : m_repo(std::move(repo)) {}
 
 bool UpdateRegistroCarneUseCase::execute(const std::string& id,
-                                          const std::string& fecha,
+                                          const std::string& fechaOriginal,
+                                          const std::string& fechaNueva,
                                           double nuevoValor) {
-    return m_repo->updateRegistroCarne(id, fecha, nuevoValor);
+    return m_repo->updateRegistroCarne(id, fechaOriginal, fechaNueva, nuevoValor);
 }
 
 // ─── DeleteRegistroCarneUseCase ──────────────────────────────────────────────
