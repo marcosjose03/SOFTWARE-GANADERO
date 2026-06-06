@@ -8,6 +8,7 @@ ApplicationWindow {
     width: 1024
     height: 768
     title: "Software Ganadero"
+    color: "#1A2E1C"
 
     Connections {
         target: appViewModel
