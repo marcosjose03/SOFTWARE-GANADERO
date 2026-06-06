@@ -56,19 +56,8 @@ target_include_directories(SoftwareGanadero PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-find_package(SQLite3 REQUIRED)
-find_package(unofficial-lmdb CONFIG QUIET)
-if(NOT unofficial-lmdb_FOUND)
-    find_path(LMDB_INCLUDE_DIR lmdb.h)
-    find_library(LMDB_LIBRARY NAMES lmdb)
-    if(NOT TARGET unofficial::lmdb::lmdb)
-        add_library(unofficial::lmdb::lmdb UNKNOWN IMPORTED)
-        set_target_properties(unofficial::lmdb::lmdb PROPERTIES
-            IMPORTED_LOCATION "${LMDB_LIBRARY}"
-            INTERFACE_INCLUDE_DIRECTORIES "${LMDB_INCLUDE_DIR}")
-    endif()
-endif()
-find_package(nlohmann_json REQUIRED)
+# Las dependencias (SQLite3, LMDB, nlohmann_json) ya se resuelven
+# en el CMakeLists.txt raíz via vcpkg, sistema o FetchContent.
 
 target_link_libraries(SoftwareGanadero PRIVATE
     Qt6::Core
