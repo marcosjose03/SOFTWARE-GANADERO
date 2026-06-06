@@ -1,127 +1,211 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import SoftwareGanadero 1.0
 
 Item {
     id: root
-    width: parent ? parent.width : 1024
+    width:  parent ? parent.width  : 1024
     height: parent ? parent.height : 768
 
     property var fincasList: []
 
     function recargarFincas() {
-        fincasList = appViewModel.getFincas()
-        fincaGrid.model = fincasList
+        fincasList       = appViewModel.getFincas()
+        fincaGrid.model  = fincasList
     }
 
     Component.onCompleted: recargarFincas()
 
+    Rectangle { anchors.fill: parent; color: Theme.fondo }
+
+    // ── Modal crear / editar finca ────────────────────────────────────────
     Popup {
         id: fincaModal
         anchors.centerIn: Overlay.overlay
-        width: 360
-        height: 340
-        modal: true
+        width:   420
+        modal:   true
+        padding: 0
         closePolicy: Popup.NoAutoClose
 
         property bool   esEdicion: false
         property string fincaId:   ""
 
         function abrirNueva() {
-            esEdicion             = false
-            fincaId               = ""
-            nombreField.text      = ""
-            hectareasField.text   = ""
-            potrerosField.text    = ""
-            capacidadField.text   = ""
-            errorFinca.text       = ""
-            btnRegistrar.text     = "Registrar Finca"
+            esEdicion           = false
+            fincaId             = ""
+            nombreField.text    = ""
+            hectareasField.text = ""
+            potrerosField.text  = ""
+            capacidadField.text = ""
+            errorFinca.text     = ""
             fincaModal.open()
         }
 
         function abrirEdicion(finca) {
-            esEdicion             = true
-            fincaId               = finca.id
-            nombreField.text      = finca.nombre
-            hectareasField.text   = String(finca.nHectareas)
-            potrerosField.text    = String(finca.nPotreros)
-            capacidadField.text   = String(finca.capacidad)
-            errorFinca.text       = ""
-            btnRegistrar.text     = "Actualizar"
+            esEdicion           = true
+            fincaId             = finca.id
+            nombreField.text    = finca.nombre
+            hectareasField.text = String(finca.nHectareas)
+            potrerosField.text  = String(finca.nPotreros)
+            capacidadField.text = String(finca.capacidad)
+            errorFinca.text     = ""
             fincaModal.open()
         }
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 16
-            spacing: 10
+        background: Tarjeta { radius: Theme.radio }
 
+        ColumnLayout {
+            anchors.fill:    parent
+            anchors.margins: Theme.espacioLg
+            spacing:         Theme.espacioMd
+
+            // Encabezado del modal
             RowLayout {
                 Layout.fillWidth: true
+
                 Text {
-                    text: fincaModal.esEdicion ? "Editar Finca" : "Nueva Finca"
-                    font.pixelSize: 16
-                    font.bold: true
+                    text:           fincaModal.esEdicion ? "Editar Finca" : "Nueva Finca"
+                    font.family:    Theme.fuente
+                    font.pixelSize: Theme.tamSubtitulo
+                    font.weight:    Font.Bold
+                    color:          Theme.textoPrimario
                     Layout.fillWidth: true
                 }
-                Button { text: "✕"; onClicked: fincaModal.close() }
+
+                AbstractButton {
+                    id: btnCerrarModal
+                    implicitWidth: 32; implicitHeight: 32
+                    onClicked: fincaModal.close()
+
+                    background: Rectangle {
+                        radius: Theme.radioSm
+                        color:  btnCerrarModal.hovered ? Theme.superficieAlt : "transparent"
+                    }
+                    contentItem: Text {
+                        text: "✕"
+                        font.pixelSize: Theme.tamCuerpo
+                        color: Theme.textoSecundario
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment:   Text.AlignVCenter
+                    }
+                }
             }
 
-            Text { text: "Nombre" }
-            TextField { id: nombreField; Layout.fillWidth: true }
-
-            Text { text: "Número de hectáreas" }
-            TextField {
-                id: hectareasField
+            // Campo Nombre
+            Column {
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhDigitsOnly
+                spacing:          Theme.espacioXs
+                Text {
+                    text: "Nombre de la finca *"
+                    font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
+                    color: Theme.textoSecundario
+                }
+                CampoTexto { id: nombreField; width: parent.width; placeholderText: "Ej: La Esperanza" }
             }
 
-            Text { text: "Número de potreros" }
-            TextField {
-                id: potrerosField
+            // Campo Hectáreas
+            Column {
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhDigitsOnly
+                spacing:          Theme.espacioXs
+                Text {
+                    text: "Hectáreas *"
+                    font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
+                    color: Theme.textoSecundario
+                }
+                CampoTexto {
+                    id: hectareasField; width: parent.width
+                    placeholderText: "Número de hectáreas"
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    validator: IntValidator { bottom: 1 }
+                }
             }
 
-            Text { text: "Capacidad" }
-            TextField {
-                id: capacidadField
+            // Campo Potreros
+            Column {
                 Layout.fillWidth: true
-                inputMethodHints: Qt.ImhDigitsOnly
+                spacing:          Theme.espacioXs
+                Text {
+                    text: "Potreros *"
+                    font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
+                    color: Theme.textoSecundario
+                }
+                CampoTexto {
+                    id: potrerosField; width: parent.width
+                    placeholderText: "Número de potreros"
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    validator: IntValidator { bottom: 1 }
+                }
             }
 
-            Button {
-                text: "Eliminar finca"
+            // Campo Capacidad
+            Column {
                 Layout.fillWidth: true
-                visible: fincaModal.esEdicion
-                onClicked: deleteFincaDialog.open()
+                spacing:          Theme.espacioXs
+                Text {
+                    text: "Capacidad (animales) *"
+                    font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
+                    color: Theme.textoSecundario
+                }
+                CampoTexto {
+                    id: capacidadField; width: parent.width
+                    placeholderText: "Capacidad máxima"
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    validator: IntValidator { bottom: 1 }
+                }
             }
 
-            Text {
-                id: errorFinca
-                color: "red"
-                visible: text !== ""
+            // Error
+            Rectangle {
                 Layout.fillWidth: true
-                wrapMode: Text.WordWrap
+                height:           errorFinca.implicitHeight + Theme.espacioSm
+                radius:           Theme.radioSm
+                color:            Theme.criticoFondo
+                border.color:     Theme.critico
+                border.width:     1
+                visible:          errorFinca.text !== ""
+
+                Text {
+                    id: errorFinca
+                    anchors.centerIn: parent
+                    width:       parent.width - Theme.espacioMd
+                    color:       Theme.critico
+                    font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
+                    wrapMode:    Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                }
             }
 
-            Button {
-                id: btnRegistrar
-                text: "Registrar Finca"
+            // Botón eliminar (solo edición)
+            BotonSecundario {
+                text:             "Eliminar finca"
+                Layout.fillWidth: true
+                visible:          fincaModal.esEdicion
+                onClicked:        deleteFincaDialog.open()
+
+                contentItem: Text {
+                    text:                parent.text
+                    font.family:         Theme.fuente; font.pixelSize: Theme.tamCuerpo
+                    color:               Theme.critico
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment:   Text.AlignVCenter
+                }
+            }
+
+            // Botón guardar
+            BotonPrimario {
+                text:             fincaModal.esEdicion ? "Guardar cambios" : "Registrar Finca"
                 Layout.fillWidth: true
                 onClicked: {
                     errorFinca.text = ""
                     if (nombreField.text === "") {
-                        errorFinca.text = "El nombre es obligatorio"
-                        return
+                        errorFinca.text = "El nombre es obligatorio"; return
                     }
                     var h = parseInt(hectareasField.text) || 0
                     var p = parseInt(potrerosField.text)  || 0
                     var c = parseInt(capacidadField.text) || 0
                     if (h <= 0 || p <= 0 || c <= 0) {
-                        errorFinca.text = "Los valores numéricos deben ser mayores a 0"
-                        return
+                        errorFinca.text = "Los valores numéricos deben ser mayores a 0"; return
                     }
                     var ok = fincaModal.esEdicion
                         ? appViewModel.updateFinca(fincaModal.fincaId, nombreField.text, h, p, c)
@@ -137,23 +221,35 @@ Item {
         }
     }
 
+    // ── Diálogo de confirmación de eliminación ────────────────────────────
     Dialog {
         id: deleteFincaDialog
-        title: "Eliminar finca"
-        modal: true
+        title:           "Eliminar finca"
+        modal:           true
         anchors.centerIn: Overlay.overlay
         standardButtons: Dialog.Ok | Dialog.Cancel
 
-        ColumnLayout {
-            Text { text: "¿Estás seguro de que deseas eliminar esta finca?" }
-            Text { id: deleteErrorText; color: "red"; visible: text !== "" }
+        Column {
+            spacing: Theme.espacioSm
+            Text {
+                text:        "¿Confirmas eliminar esta finca?"
+                font.family: Theme.fuente; font.pixelSize: Theme.tamCuerpo
+                color:       Theme.textoPrimario
+            }
+            Text {
+                id:          deleteErrorText
+                color:       Theme.critico
+                visible:     text !== ""
+                font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
+                wrapMode:    Text.WordWrap
+                width:       360
+            }
         }
 
-        onOpened: deleteErrorText.text = ""
+        onOpened:   deleteErrorText.text = ""
         onAccepted: {
             if (appViewModel.fincaTieneAnimales(fincaModal.fincaId)) {
-                deleteErrorText.text =
-                    "No es posible eliminar la finca porque tiene animales registrados"
+                deleteErrorText.text = "No es posible eliminar: la finca tiene animales registrados"
                 deleteFincaDialog.open()
                 return
             }
@@ -163,47 +259,127 @@ Item {
         }
     }
 
+    // ── Layout principal ──────────────────────────────────────────────────
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16
-        spacing: 12
+        spacing:      0
 
-        RowLayout {
+        // Encabezado
+        EncabezadoPantalla {
+            titulo:           "Inventario de Fincas"
             Layout.fillWidth: true
-            Button { text: "←"; onClicked: appViewModel.goToMenu() }
-            Text {
-                text: "Inventario"
-                font.pixelSize: 18
-                font.bold: true
-                Layout.fillWidth: true
+            onVolverClicked:  appViewModel.goToMenu()
+
+            // Botón agregar en el encabezado
+            BotonPrimario {
+                anchors.right:         parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.rightMargin:   Theme.espacioMd
+                width:                 140
+                height:                36
+                text:                  "+ Nueva Finca"
+                onClicked:             fincaModal.abrirNueva()
+
+                background: Rectangle {
+                    radius: Theme.radioSm
+                    color:  parent.pressed ? Qt.darker(Theme.primario, 1.15)
+                          : parent.hovered ? Theme.primarioHover
+                                           : Theme.primario
+                    Behavior on color { ColorAnimation { duration: 120 } }
+                }
             }
         }
 
-        GridView {
-            id: fincaGrid
-            Layout.fillWidth: true
+        // Área de contenido
+        Item {
+            Layout.fillWidth:  true
             Layout.fillHeight: true
-            cellWidth: 150
-            cellHeight: 60
-            model: fincasList
 
-            header: Item {
-                width: fincaGrid.width
-                height: 60
-                Button {
-                    anchors.centerIn: parent
-                    text: "+"
-                    width: 140
-                    height: 50
-                    onClicked: fincaModal.abrirNueva()
-                }
+            // Estado vacío
+            EstadoVacio {
+                anchors.centerIn: parent
+                icono:      "🏚️"
+                mensaje:    "Aún no tienes fincas registradas.\nCrea tu primera finca para comenzar."
+                textoBoton: "Crear primera finca"
+                visible:    fincaGrid.model.length === 0
+                onAcionClicked: fincaModal.abrirNueva()
             }
 
-            delegate: Button {
-                width: 140
-                height: 50
-                text: modelData.nombre || ""
-                onClicked: fincaModal.abrirEdicion(modelData)
+            // Grid de fincas
+            GridView {
+                id: fincaGrid
+                anchors.fill:          parent
+                anchors.margins:       Theme.espacioLg
+                anchors.topMargin:     Theme.espacioLg
+                cellWidth:             Math.min(280, (width - Theme.espacioMd) / Math.max(1, Math.floor(width / 260)))
+                cellHeight:            130
+                model:                 fincasList
+                visible:               fincasList.length > 0
+
+                delegate: Item {
+                    width:  fincaGrid.cellWidth - Theme.espacioMd
+                    height: fincaGrid.cellHeight - Theme.espacioMd
+
+                    AbstractButton {
+                        anchors.fill: parent
+                        onClicked:    fincaModal.abrirEdicion(modelData)
+
+                        background: Tarjeta {
+                            anchors.fill:  parent
+                            border.color:  parent.pressed || parent.hovered ? Theme.primario : Theme.borde
+                            Behavior on border.color { ColorAnimation { duration: 100 } }
+                        }
+
+                        contentItem: ColumnLayout {
+                            anchors {
+                                fill:    parent
+                                margins: Theme.espacioMd
+                            }
+                            spacing: Theme.espacioXs
+
+                            Row {
+                                spacing: Theme.espacioSm
+                                Text { text: "🏚️"; font.pixelSize: 22 }
+                                Text {
+                                    text:        modelData.nombre || ""
+                                    font.family: Theme.fuente
+                                    font.pixelSize: Theme.tamCuerpo
+                                    font.weight:    Font.DemiBold
+                                    color:          Theme.textoPrimario
+                                    elide:          Text.ElideRight
+                                    width:          parent.parent.width - 42
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            Text {
+                                text:        (modelData.nHectareas || "—") + " ha  ·  "
+                                           + (modelData.nPotreros  || "—") + " potreros"
+                                font.family: Theme.fuente
+                                font.pixelSize: Theme.tamEtiqueta
+                                color:          Theme.textoSecundario
+                                Layout.fillWidth: true
+                            }
+
+                            Text {
+                                text:        "Capacidad: " + (modelData.capacidad || "—") + " animales"
+                                font.family: Theme.fuente
+                                font.pixelSize: Theme.tamEtiqueta
+                                color:          Theme.textoSecundario
+                                Layout.fillWidth: true
+                            }
+
+                            Item { Layout.fillHeight: true }
+
+                            Text {
+                                text:        "Toca para editar →"
+                                font.family: Theme.fuente
+                                font.pixelSize: Theme.tamMicro
+                                color:          Theme.primario
+                            }
+                        }
+                    }
+                }
             }
         }
     }

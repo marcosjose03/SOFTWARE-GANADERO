@@ -1,28 +1,18 @@
 set(SOURCES
-
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    # Infrastructure — utils
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/UuidGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/DateTimeUtils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/ImageProcessor.cpp
-
-    # Infrastructure — database
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/database/SQLiteDatabase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/database/LmdbDatabase.cpp
-
-    # Infrastructure — repositories
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteUsuarioRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteFincaRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/SqliteGanadoRepository.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/repositories/LmdbProduccionRepository.cpp
-
-    # Application — use cases
     ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/usuario/UsuarioUseCases.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/finca/FincaUseCases.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/ganado/GanadoUseCases.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/application/usecases/produccion/ProduccionUseCases.cpp
-
-    # Application — session management
     ${CMAKE_CURRENT_SOURCE_DIR}/application/session/SessionManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/presentation/viewmodels/AppViewModel.cpp
 )
@@ -32,13 +22,25 @@ set_target_properties(SoftwareGanadero PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-
+# Marcar Theme.qml como singleton para que Qt lo registre correctamente
+set_source_files_properties(ui/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(SoftwareGanadero
     URI SoftwareGanadero
     VERSION 1.0
     QML_FILES
+        ui/Theme.qml
         ui/main.qml
+        # Componentes del sistema de diseño
+        ui/components/BotonPrimario.qml
+        ui/components/BotonSecundario.qml
+        ui/components/CampoTexto.qml
+        ui/components/CampoFormulario.qml
+        ui/components/SelectorDesplegable.qml
+        ui/components/Tarjeta.qml
+        ui/components/EncabezadoPantalla.qml
+        ui/components/EstadoVacio.qml
+        # Pantallas
         ui/screens/LoginScreen.qml
         ui/screens/RegisterScreen.qml
         ui/screens/MenuScreen.qml
@@ -50,6 +52,8 @@ qt_add_qml_module(SoftwareGanadero
         ui/screens/EditarCampoModal.qml
         ui/screens/NuevoAnimalModal.qml
         ui/screens/DetalleAnimalComponent.qml
+        ui/screens/RegistroLecheAnimalView.qml
+        ui/screens/RegistroCarneAnimalView.qml
 )
 
 target_include_directories(SoftwareGanadero PRIVATE

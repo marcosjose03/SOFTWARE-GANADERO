@@ -1,14 +1,15 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import SoftwareGanadero 1.0
 import "screens"
 
 ApplicationWindow {
     id: root
     visible: true
-    width: 1024
-    height: 768
-    title: "Software Ganadero"
-    color: "#1A2E1C"
+    width:   1024
+    height:  768
+    title:   "GanSoft — Software Ganadero"
+    color:   Theme.fondo
 
     Connections {
         target: appViewModel
@@ -25,13 +26,13 @@ ApplicationWindow {
         }
     }
 
-    Component { id: loginComp;        LoginScreen {}               }
-    Component { id: registerComp;     RegisterScreen {}            }
-    Component { id: menuComp;         MenuScreen {}                }
-    Component { id: inventarioComp;   InventarioScreen {}          }
-    Component { id: reproductivoComp; RegistroReproductivoScreen {}}
-    Component { id: lecheComp;        RegistroLecheScreen {}       }
-    Component { id: pesoComp;         RegistroPesoScreen {}        }
+    Component { id: loginComp;        LoginScreen {}                }
+    Component { id: registerComp;     RegisterScreen {}             }
+    Component { id: menuComp;         MenuScreen {}                 }
+    Component { id: inventarioComp;   InventarioScreen {}           }
+    Component { id: reproductivoComp; RegistroReproductivoScreen {} }
+    Component { id: lecheComp;        RegistroLecheScreen {}        }
+    Component { id: pesoComp;         RegistroPesoScreen {}         }
 
     StackView {
         id: stackView
