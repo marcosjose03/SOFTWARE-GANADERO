@@ -6,3 +6,4 @@ CMakeUserPresets.json
 *.o
 ganadero.db
 ganadero_lmdb/build_test/
+build_test/
