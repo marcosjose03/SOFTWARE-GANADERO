@@ -81,7 +81,8 @@ public:
     explicit UpdateRegistroLecheUseCase(
         std::shared_ptr<Domain::IProduccionRepository> repo);
     [[nodiscard]] bool execute(const std::string& id,
-                               const std::string& fecha,
+                               const std::string& fechaOriginal,
+                                 const std::string& fechaNueva,
                                double nuevoValor) override;
 private:
     std::shared_ptr<Domain::IProduccionRepository> m_repo;

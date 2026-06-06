@@ -114,9 +114,10 @@ UpdateRegistroLecheUseCase::UpdateRegistroLecheUseCase(
     : m_repo(std::move(repo)) {}
 
 bool UpdateRegistroLecheUseCase::execute(const std::string& id,
-                                          const std::string& fecha,
+                                          const std::string& fechaOriginal,
+                                          const std::string& fechaNueva,
                                           double nuevoValor) {
-    return m_repo->updateRegistroLeche(id, fecha, nuevoValor);
+    return m_repo->updateRegistroLeche(id, fechaOriginal, fechaNueva, nuevoValor);
 }
 
 // ─── DeleteRegistroLecheUseCase ──────────────────────────────────────────────

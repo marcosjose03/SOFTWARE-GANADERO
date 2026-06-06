@@ -47,6 +47,7 @@ qt_add_qml_module(SoftwareGanadero
         ui/screens/EditarCampoModal.qml
         ui/screens/NuevoAnimalModal.qml
         ui/screens/DetalleAnimalComponent.qml
+        ui/screens/RegistroLecheAnimalView.qml
 )
 
 target_include_directories(SoftwareGanadero PRIVATE

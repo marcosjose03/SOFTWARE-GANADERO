@@ -169,7 +169,7 @@ TEST_F(ProduccionUseCasesTest, AddRegistroLeche) {
 
 TEST_F(ProduccionUseCasesTest, UpdateRegistroLeche) {
     addLecheUC->execute(idGanado, {"2024-03-11", 18.5});
-    ASSERT_TRUE(updateLecheUC->execute(idGanado, "2024-03-11", 22.0));
+    ASSERT_TRUE(updateLecheUC->execute(idGanado, "2024-03-11", "2024-03-11", 22.0));
     EXPECT_DOUBLE_EQ(getUC->execute(idGanado)->registroLeche[0].valor, 22.0);
 }
 

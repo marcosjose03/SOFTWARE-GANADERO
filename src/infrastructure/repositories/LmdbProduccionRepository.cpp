@@ -2,6 +2,7 @@
 #include <nlohmann/json.hpp>
 #include <lmdb.h>
 #include <stdexcept>
+#include <iostream>
 
 using json = nlohmann::json;
 
@@ -77,6 +78,10 @@ LmdbProduccionRepository::load(const std::string& id) const {
 }
 
 bool LmdbProduccionRepository::save(const Domain::Produccion& p) {
+    std::cerr << "Saving produccion id: " << p.id << "\n";
+    std::cerr << "Registros leche count: " << p.registroLeche.size() << "\n";
+    for (const auto& r : p.registroLeche)
+        std::cerr << "  fecha: " << r.fecha << " valor: " << r.valor << "\n";
     std::string jsonStr = toJson(p);
 
     MDB_txn* txn = nullptr;
@@ -173,12 +178,14 @@ bool LmdbProduccionRepository::addRegistroLeche(const std::string& id,
 }
 
 bool LmdbProduccionRepository::updateRegistroLeche(const std::string& id,
-                                                    const std::string& fecha,
+                                                    const std::string& fechaOriginal,
+                                                    const std::string& fechaNueva,
                                                     double nuevoValor) {
     auto p = load(id);
     if (!p) return false;
     for (auto& r : p->registroLeche) {
-        if (r.fecha == fecha) {
+        if (r.fecha == fechaOriginal) {
+            r.fecha = fechaNueva;
             r.valor = nuevoValor;
             return save(*p);
         }
