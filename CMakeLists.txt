@@ -23,7 +23,6 @@ if(NOT SQLite3_FOUND AND NOT unofficial-sqlite3_FOUND)
     FetchContent_Declare(
         sqlite3_src
         URL https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip
-        URL_HASH SHA256=a357c3ed49e4b07da55f87b4b50dd7d6d07e6fe88b82d12f6f2f09cf70d76cee
     )
     FetchContent_MakeAvailable(sqlite3_src)
     add_library(sqlite3_lib STATIC
