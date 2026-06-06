@@ -65,8 +65,8 @@ target_link_libraries(SoftwareGanadero PRIVATE
     Qt6::Gui
     Qt6::QuickControls2
     Qt6::Charts
-    SQLite::SQLite3
-    unofficial::lmdb::lmdb
+    ${SQLITE3_TARGET}
+    ${LMDB_TARGET}
     nlohmann_json::nlohmann_json
 )
 

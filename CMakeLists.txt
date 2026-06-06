@@ -15,34 +15,40 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick QuickControls2 Charts)
 
 # --- SQLite3 ---
 find_package(SQLite3 QUIET)
-if(NOT SQLite3_FOUND)
+if(SQLite3_FOUND)
+    set(SQLITE3_TARGET SQLite::SQLite3)
+else()
     find_package(unofficial-sqlite3 CONFIG QUIET)
-endif()
-if(NOT SQLite3_FOUND AND NOT unofficial-sqlite3_FOUND)
-    message(STATUS "SQLite3 no encontrado, descargando amalgamation...")
-    FetchContent_Declare(
-        sqlite3_src
-        URL https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip
-    )
-    FetchContent_MakeAvailable(sqlite3_src)
-    add_library(sqlite3_lib STATIC
-        ${sqlite3_src_SOURCE_DIR}/sqlite3.c
-    )
-    target_include_directories(sqlite3_lib PUBLIC ${sqlite3_src_SOURCE_DIR})
-    add_library(SQLite::SQLite3 ALIAS sqlite3_lib)
-    set(SQLite3_FOUND TRUE)
+    if(unofficial-sqlite3_FOUND)
+        set(SQLITE3_TARGET unofficial::sqlite3::sqlite3)
+    else()
+        message(STATUS "SQLite3 no encontrado, descargando amalgamation...")
+        FetchContent_Declare(
+            sqlite3_src
+            URL https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip
+        )
+        FetchContent_MakeAvailable(sqlite3_src)
+        add_library(sqlite3_bundled STATIC
+            ${sqlite3_src_SOURCE_DIR}/sqlite3.c
+        )
+        target_include_directories(sqlite3_bundled PUBLIC ${sqlite3_src_SOURCE_DIR})
+        set(SQLITE3_TARGET sqlite3_bundled)
+    endif()
 endif()
 
 # --- LMDB ---
 find_package(unofficial-lmdb CONFIG QUIET)
-if(NOT unofficial-lmdb_FOUND)
+if(unofficial-lmdb_FOUND)
+    set(LMDB_TARGET unofficial::lmdb::lmdb)
+else()
     find_path(LMDB_INCLUDE_DIR lmdb.h QUIET)
     find_library(LMDB_LIBRARY NAMES lmdb QUIET)
     if(LMDB_INCLUDE_DIR AND LMDB_LIBRARY)
-        add_library(unofficial::lmdb::lmdb UNKNOWN IMPORTED)
-        set_target_properties(unofficial::lmdb::lmdb PROPERTIES
+        add_library(lmdb_system UNKNOWN IMPORTED)
+        set_target_properties(lmdb_system PROPERTIES
             IMPORTED_LOCATION "${LMDB_LIBRARY}"
             INTERFACE_INCLUDE_DIRECTORIES "${LMDB_INCLUDE_DIR}")
+        set(LMDB_TARGET lmdb_system)
         message(STATUS "LMDB del sistema: ${LMDB_LIBRARY}")
     else()
         message(STATUS "LMDB no encontrado, descargando fuente...")
@@ -52,16 +58,16 @@ if(NOT unofficial-lmdb_FOUND)
             GIT_TAG        LMDB_0.9.31
         )
         FetchContent_MakeAvailable(lmdb_src)
-        add_library(lmdb_lib STATIC
+        add_library(lmdb_bundled STATIC
             ${lmdb_src_SOURCE_DIR}/libraries/liblmdb/mdb.c
             ${lmdb_src_SOURCE_DIR}/libraries/liblmdb/midl.c
         )
-        target_include_directories(lmdb_lib PUBLIC
+        target_include_directories(lmdb_bundled PUBLIC
             ${lmdb_src_SOURCE_DIR}/libraries/liblmdb)
         if(WIN32)
-            target_link_libraries(lmdb_lib PUBLIC ntdll)
+            target_link_libraries(lmdb_bundled PUBLIC ntdll)
         endif()
-        add_library(unofficial::lmdb::lmdb ALIAS lmdb_lib)
+        set(LMDB_TARGET lmdb_bundled)
     endif()
 endif()
 
@@ -76,6 +82,10 @@ if(NOT nlohmann_json_FOUND)
     )
     FetchContent_MakeAvailable(nlohmann_json)
 endif()
+
+# Pasar targets resueltos al subdirectorio
+set(SQLITE3_TARGET ${SQLITE3_TARGET} CACHE INTERNAL "")
+set(LMDB_TARGET    ${LMDB_TARGET}    CACHE INTERNAL "")
 
 add_subdirectory(src)
 
