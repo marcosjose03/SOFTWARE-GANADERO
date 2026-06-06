@@ -56,9 +56,6 @@ target_include_directories(SoftwareGanadero PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# Las dependencias (SQLite3, LMDB, nlohmann_json) ya se resuelven
-# en el CMakeLists.txt raíz via vcpkg, sistema o FetchContent.
-
 target_link_libraries(SoftwareGanadero PRIVATE
     Qt6::Core
     Qt6::Quick
