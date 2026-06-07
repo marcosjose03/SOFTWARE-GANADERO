@@ -22,25 +22,25 @@ set_target_properties(SoftwareGanadero PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-# Marcar Theme.qml como singleton para que Qt lo registre correctamente
-set_source_files_properties(ui/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+# Theme.qml como singleton en la misma carpeta que los screens
+set_source_files_properties(ui/screens/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(SoftwareGanadero
     URI SoftwareGanadero
     VERSION 1.0
     NO_CACHEGEN
     QML_FILES
-        ui/Theme.qml
         ui/main.qml
-        # Componentes del sistema de diseño
-        ui/components/BotonPrimario.qml
-        ui/components/BotonSecundario.qml
-        ui/components/CampoTexto.qml
-        ui/components/CampoFormulario.qml
-        ui/components/SelectorDesplegable.qml
-        ui/components/Tarjeta.qml
-        ui/components/EncabezadoPantalla.qml
-        ui/components/EstadoVacio.qml
+        # Sistema de diseño (colocados en ui/screens/ para auto-import)
+        ui/screens/Theme.qml
+        ui/screens/BotonPrimario.qml
+        ui/screens/BotonSecundario.qml
+        ui/screens/CampoTexto.qml
+        ui/screens/CampoFormulario.qml
+        ui/screens/SelectorDesplegable.qml
+        ui/screens/Tarjeta.qml
+        ui/screens/EncabezadoPantalla.qml
+        ui/screens/EstadoVacio.qml
         # Pantallas
         ui/screens/LoginScreen.qml
         ui/screens/RegisterScreen.qml

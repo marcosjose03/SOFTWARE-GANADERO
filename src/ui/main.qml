@@ -1,6 +1,5 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import SoftwareGanadero 1.0
 import "screens"
 
 ApplicationWindow {
@@ -9,7 +8,7 @@ ApplicationWindow {
     width:   1024
     height:  768
     title:   "GanSoft — Software Ganadero"
-    color:   Theme.fondo
+    color:   "#F5F6F2"
 
     Connections {
         target: appViewModel

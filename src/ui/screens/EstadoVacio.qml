@@ -1,5 +1,4 @@
 import QtQuick 2.15
-import SoftwareGanadero 1.0
 
 Column {
     id: root
