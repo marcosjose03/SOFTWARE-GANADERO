@@ -519,6 +519,11 @@ QVariantList AppViewModel::getAllGanado() {
             ? QString::fromStdString(*g.fechaUltimaPalpacion) : "";
         map[QStringLiteral("fechaInseminacion")]    = g.fechaInseminacion
             ? QString::fromStdString(*g.fechaInseminacion) : "";
+        
+        auto prod = m_getProduccionUC->execute(g.id);
+        map[QStringLiteral("ordeno")] = QVariant(prod.has_value() ? prod->ordeno : false);
+        map[QStringLiteral("prenez")] = QVariant(prod.has_value() ? prod->prenez : false);
+
         list.append(map);
     }
     return list;
@@ -611,10 +616,14 @@ bool AppViewModel::addRegistroLeche(const QString& id,
 }
 
 bool AppViewModel::updateRegistroLeche(const QString& id,
-                                        const QString& fecha,
+                                        const QString& fechaOriginal,
+                                        const QString& fechaNueva,
                                         double nuevoValor) {
-    return m_updateLecheUC->execute(id.toStdString(),
-                                    fecha.toStdString(), nuevoValor);
+    return m_updateLecheUC->execute(
+        id.toStdString(),
+        fechaOriginal.toStdString(),
+        fechaNueva.toStdString(),
+        nuevoValor);
 }
 
 bool AppViewModel::deleteRegistroLeche(const QString& id, const QString& fecha) {
@@ -628,10 +637,14 @@ bool AppViewModel::addRegistroCarne(const QString& id,
 }
 
 bool AppViewModel::updateRegistroCarne(const QString& id,
-                                        const QString& fecha,
+                                        const QString& fechaOriginal,
+                                        const QString& fechaNueva,
                                         double nuevoValor) {
-    return m_updateCarneUC->execute(id.toStdString(),
-                                    fecha.toStdString(), nuevoValor);
+    return m_updateCarneUC->execute(
+        id.toStdString(),
+        fechaOriginal.toStdString(),
+        fechaNueva.toStdString(),
+        nuevoValor);
 }
 
 bool AppViewModel::deleteRegistroCarne(const QString& id, const QString& fecha) {

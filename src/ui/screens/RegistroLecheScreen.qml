@@ -54,8 +54,6 @@ Item {
 
     Component.onCompleted: recargarAnimales()
 
-    Rectangle { anchors.fill: parent; color: "white" }
-
     // ── Vista principal ───────────────────────────────────────────────────
     ColumnLayout {
         anchors.fill: parent

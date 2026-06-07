@@ -22,12 +22,16 @@ public:
 
     bool addRegistroLeche(const std::string& id, const Domain::RegistroFecha& r)          override;
     bool updateRegistroLeche(const std::string& id,
-                             const std::string& fecha, double nuevoValor)                 override;
+                             const std::string& fechaOriginal,
+                             const std::string& fechaNueva,
+                             double nuevoValor)                                              override;
     bool deleteRegistroLeche(const std::string& id, const std::string& fecha)             override;
 
     bool addRegistroCarne(const std::string& id, const Domain::RegistroFecha& r)          override;
     bool updateRegistroCarne(const std::string& id,
-                             const std::string& fecha, double nuevoValor)                 override;
+                             const std::string& fechaOriginal,
+                             const std::string& fechaNueva,
+                             double nuevoValor)                                           override;
     bool deleteRegistroCarne(const std::string& id, const std::string& fecha)             override;
 
 private:

@@ -55,10 +55,11 @@ public:
 class IUpdateRegistroLecheUseCase {
 public:
     virtual ~IUpdateRegistroLecheUseCase() = default;
-    [[nodiscard]] virtual bool
-        execute(const std::string& id,
-                const std::string& fecha,
-                double nuevoValor) = 0;
+    [[nodiscard]] virtual bool execute(
+        const std::string& id,
+        const std::string& fechaOriginal,
+        const std::string& fechaNueva,
+        double nuevoValor) = 0;
 };
 
 class IDeleteRegistroLecheUseCase {
@@ -80,7 +81,8 @@ public:
     virtual ~IUpdateRegistroCarneUseCase() = default;
     [[nodiscard]] virtual bool
         execute(const std::string& id,
-                const std::string& fecha,
+                const std::string& fechaOriginal,
+                const std::string& fechaNueva,
                 double nuevoValor) = 0;
 };
 

@@ -126,7 +126,8 @@ public:
                                               const QString& fecha,
                                               double valor);
     Q_INVOKABLE bool         updateRegistroLeche(const QString& id,
-                                                 const QString& fecha,
+                                                 const QString& fechaOriginal,
+                                                 const QString& fechaNueva,
                                                  double nuevoValor);
     Q_INVOKABLE bool         deleteRegistroLeche(const QString& id,
                                                  const QString& fecha);
@@ -134,7 +135,8 @@ public:
                                               const QString& fecha,
                                               double valor);
     Q_INVOKABLE bool         updateRegistroCarne(const QString& id,
-                                                 const QString& fecha,
+                                                 const QString& fechaOriginal,
+                                                 const QString& fechaNueva,
                                                  double nuevoValor);
     Q_INVOKABLE bool         deleteRegistroCarne(const QString& id,
                                                  const QString& fecha);

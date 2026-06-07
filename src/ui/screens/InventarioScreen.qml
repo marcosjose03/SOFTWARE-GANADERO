@@ -16,8 +16,6 @@ Item {
 
     Component.onCompleted: recargarFincas()
 
-    Rectangle { anchors.fill: parent; color: "white" }
-
     Popup {
         id: fincaModal
         anchors.centerIn: Overlay.overlay
@@ -25,7 +23,6 @@ Item {
         height: 340
         modal: true
         closePolicy: Popup.NoAutoClose
-        background: Rectangle { color: "white"; border.color: "#e0e0e0"; radius: 6 }
 
         property bool   esEdicion: false
         property string fincaId:   ""
