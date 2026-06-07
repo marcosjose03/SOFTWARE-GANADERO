@@ -28,6 +28,7 @@ set_source_files_properties(ui/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 qt_add_qml_module(SoftwareGanadero
     URI SoftwareGanadero
     VERSION 1.0
+    NO_CACHEGEN
     QML_FILES
         ui/Theme.qml
         ui/main.qml
