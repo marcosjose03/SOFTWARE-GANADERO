@@ -5,10 +5,9 @@ import "screens"
 ApplicationWindow {
     id: root
     visible: true
-    width:   1024
-    height:  768
-    title:   "GanSoft — Software Ganadero"
-    color:   "#F5F6F2"
+    width: 1024
+    height: 768
+    title: "Software Ganadero"
 
     Connections {
         target: appViewModel
@@ -25,13 +24,13 @@ ApplicationWindow {
         }
     }
 
-    Component { id: loginComp;        LoginScreen {}                }
-    Component { id: registerComp;     RegisterScreen {}             }
-    Component { id: menuComp;         MenuScreen {}                 }
-    Component { id: inventarioComp;   InventarioScreen {}           }
-    Component { id: reproductivoComp; RegistroReproductivoScreen {} }
-    Component { id: lecheComp;        RegistroLecheScreen {}        }
-    Component { id: pesoComp;         RegistroPesoScreen {}         }
+    Component { id: loginComp;        LoginScreen {}               }
+    Component { id: registerComp;     RegisterScreen {}            }
+    Component { id: menuComp;         MenuScreen {}                }
+    Component { id: inventarioComp;   InventarioScreen {}          }
+    Component { id: reproductivoComp; RegistroReproductivoScreen {}}
+    Component { id: lecheComp;        RegistroLecheScreen {}       }
+    Component { id: pesoComp;         RegistroPesoScreen {}        }
 
     StackView {
         id: stackView

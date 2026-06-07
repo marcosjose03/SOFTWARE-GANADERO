@@ -4,12 +4,12 @@ import QtQuick.Layouts 1.15
 
 Item {
     id: root
-    width:  parent ? parent.width  : 1024
+    width: parent ? parent.width : 1024
     height: parent ? parent.height : 768
 
-    property var    animalesList:      []
-    property string selectedAnimalId:  ""
-    property var    selectedAnimal:    null
+    property var  animalesList:      []
+    property string selectedAnimalId: ""
+    property var    selectedAnimal:   null
 
     Connections {
         target: appViewModel
@@ -20,7 +20,7 @@ Item {
     }
 
     function recargarAnimales() {
-        var todos    = appViewModel.getAllGanado()
+        var todos = appViewModel.getAllGanado()
         var conOrdeno = []
         for (var i = 0; i < todos.length; i++) {
             var ord = todos[i].ordeno
@@ -35,6 +35,7 @@ Item {
         var resultado    = []
         var busqueda     = searchField.text.toLowerCase()
         var filtroActivo = checkBovino.checked || checkCaprino.checked || checkBufalino.checked
+
         for (var i = 0; i < animalesList.length; i++) {
             var a = animalesList[i]
             if (filtroActivo) {
@@ -53,189 +54,95 @@ Item {
 
     Component.onCompleted: recargarAnimales()
 
-    Rectangle { anchors.fill: parent; color: Theme.fondo }
-
     // ── Vista principal ───────────────────────────────────────────────────
     ColumnLayout {
         anchors.fill: parent
-        spacing:      0
-        visible:      !registroLoader.active
+        anchors.margins: 16
+        spacing: 12
+        visible: !registroLoader.active
 
-        EncabezadoPantalla {
-            titulo:           "Registro de Leche"
+        RowLayout {
             Layout.fillWidth: true
-            onVolverClicked:  appViewModel.goToMenu()
+            Button { text: "←"; onClicked: appViewModel.goToMenu() }
+            Text {
+                text: "Registro de Leche"
+                font.pixelSize: 18
+                font.bold: true
+                Layout.fillWidth: true
+            }
         }
 
         // Banner error
         Rectangle {
             id: errorBanner
             Layout.fillWidth: true
-            height:           visible ? 44 : 0
-            color:            Theme.criticoFondo
-            border.color:     Theme.critico
-            border.width:     1
-            visible:          false
+            height: visible ? 36 : 0
+            color: "#ffdddd"
+            border.color: "#cc0000"
+            radius: 4
+            visible: false
             property string errorMessage: ""
 
             RowLayout {
-                anchors { fill: parent; margins: Theme.espacioSm }
-
+                anchors.fill: parent
+                anchors.margins: 6
                 Text {
-                    text:          "⚠ " + errorBanner.errorMessage
-                    font.family:   Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-                    color:         Theme.critico
+                    text: errorBanner.errorMessage
+                    color: "#cc0000"
                     Layout.fillWidth: true
-                    wrapMode:      Text.WordWrap
+                    wrapMode: Text.WordWrap
                 }
-                AbstractButton {
-                    implicitWidth: 24; implicitHeight: 24
+                Button {
+                    text: "✕"
+                    implicitWidth: 24
+                    implicitHeight: 24
                     onClicked: errorBanner.visible = false
-                    contentItem: Text {
-                        text: "✕"; color: Theme.critico
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment:   Text.AlignVCenter
-                    }
                 }
             }
         }
 
-        // Barra de filtros
-        Rectangle {
+        // Filtros
+        RowLayout {
             Layout.fillWidth: true
-            height:           filtrosRow.implicitHeight + Theme.espacioMd * 2
-            color:            Theme.superficie
-
-            Rectangle {
-                anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-                height: 1; color: Theme.borde
+            CheckBox {
+                id: checkBovino
+                text: "Bovino"
+                onCheckedChanged: animalGrid.model = filtrarAnimales()
             }
-
-            RowLayout {
-                id: filtrosRow
-                anchors {
-                    left: parent.left; right: parent.right
-                    verticalCenter: parent.verticalCenter
-                    leftMargin: Theme.espacioMd; rightMargin: Theme.espacioMd
-                }
-                spacing: Theme.espacioSm
-
-                Text {
-                    text: "Filtrar:"; font.family: Theme.fuente
-                    font.pixelSize: Theme.tamEtiqueta; color: Theme.textoSecundario
-                }
-
-                CheckBox {
-                    id: checkBovino; text: "Bovino"
-                    contentItem: Text {
-                        leftPadding: checkBovino.indicator.width + 4; text: checkBovino.text
-                        font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-                        color: checkBovino.checked ? Theme.primario : Theme.textoSecundario
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onCheckedChanged: animalGrid.model = filtrarAnimales()
-                }
-                CheckBox {
-                    id: checkCaprino; text: "Caprino"
-                    contentItem: Text {
-                        leftPadding: checkCaprino.indicator.width + 4; text: checkCaprino.text
-                        font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-                        color: checkCaprino.checked ? Theme.primario : Theme.textoSecundario
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onCheckedChanged: animalGrid.model = filtrarAnimales()
-                }
-                CheckBox {
-                    id: checkBufalino; text: "Bufalino"
-                    contentItem: Text {
-                        leftPadding: checkBufalino.indicator.width + 4; text: checkBufalino.text
-                        font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-                        color: checkBufalino.checked ? Theme.primario : Theme.textoSecundario
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    onCheckedChanged: animalGrid.model = filtrarAnimales()
-                }
-
-                Item { Layout.fillWidth: true }
-
-                CampoTexto {
-                    id:              searchField
-                    width:           220; height: 36
-                    placeholderText: "🔍 Buscar por identificador..."
-                    onTextChanged:   animalGrid.model = filtrarAnimales()
-                }
+            CheckBox {
+                id: checkCaprino
+                text: "Caprino"
+                onCheckedChanged: animalGrid.model = filtrarAnimales()
+            }
+            CheckBox {
+                id: checkBufalino
+                text: "Bufalino"
+                onCheckedChanged: animalGrid.model = filtrarAnimales()
+            }
+            TextField {
+                id: searchField
+                Layout.fillWidth: true
+                placeholderText: "Buscar por identificador..."
+                onTextChanged: animalGrid.model = filtrarAnimales()
             }
         }
 
-        // Área de contenido
-        Item {
-            Layout.fillWidth:  true
+        GridView {
+            id: animalGrid
+            Layout.fillWidth: true
             Layout.fillHeight: true
-
-            EstadoVacio {
-                anchors.centerIn: parent
-                icono:   "🥛"
-                mensaje: "No hay animales con ordeño activo.\nActiva el ordeño en el registro del animal."
-                visible: animalGrid.model.length === 0
-            }
-
-            GridView {
-                id: animalGrid
-                anchors.fill:    parent
-                anchors.margins: Theme.espacioMd
-                cellWidth:       Math.min(200, (width - Theme.espacioSm) / Math.max(1, Math.floor(width / 180)))
-                cellHeight:      110
-                model:           []
-                visible:         count > 0
-
-                delegate: Item {
-                    width:  animalGrid.cellWidth - Theme.espacioSm
-                    height: animalGrid.cellHeight - Theme.espacioSm
-
-                    AbstractButton {
-                        anchors.fill: parent
-                        onClicked: {
-                            selectedAnimalId      = modelData.id
-                            selectedAnimal        = modelData
-                            registroLoader.active = true
-                        }
-
-                        background: Tarjeta {
-                            anchors.fill:  parent
-                            border.color:  parent.pressed || parent.hovered
-                                           ? Theme.primario : Theme.borde
-                            Behavior on border.color { ColorAnimation { duration: 100 } }
-                        }
-
-                        contentItem: ColumnLayout {
-                            anchors { fill: parent; margins: Theme.espacioSm }
-                            spacing: Theme.espacioXs
-
-                            Text {
-                                text:           "🥛"
-                                font.pixelSize: 24
-                                Layout.alignment: Qt.AlignHCenter
-                            }
-                            Text {
-                                text:                String(modelData.identificador || "")
-                                font.family:         Theme.fuente
-                                font.pixelSize:      Theme.tamCuerpo
-                                font.weight:         Font.DemiBold
-                                color:               Theme.textoPrimario
-                                horizontalAlignment: Text.AlignHCenter
-                                elide:               Text.ElideRight
-                                Layout.fillWidth:    true
-                            }
-                            Text {
-                                text:                (modelData.especie || "") + " · " + (modelData.raza || "")
-                                font.family:         Theme.fuente
-                                font.pixelSize:      Theme.tamMicro
-                                color:               Theme.textoSecundario
-                                horizontalAlignment: Text.AlignHCenter
-                                Layout.fillWidth:    true
-                            }
-                        }
-                    }
+            cellWidth: 120
+            cellHeight: 50
+            model: []
+            delegate: Button {
+                width: 110
+                height: 44
+                text: modelData.identificador !== undefined
+                    ? String(modelData.identificador) : ""
+                onClicked: {
+                    selectedAnimalId = modelData.id
+                    selectedAnimal   = modelData
+                    registroLoader.active = true
                 }
             }
         }
@@ -245,7 +152,7 @@ Item {
     Loader {
         id: registroLoader
         anchors.fill: parent
-        active:       false
+        active: false
         sourceComponent: RegistroLecheAnimalView {
             width:    root.width
             height:   root.height

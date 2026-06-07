@@ -5,12 +5,14 @@ import Qt.labs.platform 1.1 as Platform
 
 Item {
     id: vista
-    width:  parent ? parent.width  : 1024
+    width: parent ? parent.width : 1024
     height: parent ? parent.height : 768
 
     Connections {
         target: appViewModel
-        function onErrorOccurred(message) { errorText.text = message }
+        function onErrorOccurred(message) {
+            errorText.text = message
+        }
     }
 
     signal animalRegistrado()
@@ -30,36 +32,36 @@ Item {
     }
 
     function limpiar() {
-        especieCombo.currentIndex        = 0
-        identificadorField.text          = ""
-        fincaCombo.currentIndex          = 0
-        nacimientoField.text             = ""
-        sexoCombo.currentIndex           = 0
-        estadoCombo.currentIndex         = 0
-        razaField.text                   = ""
-        razaDropdown.visible             = false
-        padreSearch.text                 = ""
-        padreSelectedId.text             = ""
-        madreSearch.text                 = ""
-        madreSelectedId.text             = ""
-        chapetaField.text                = ""
-        desteteField.text                = ""
-        ultimoPartoField.text            = ""
-        ultimaPalpacionField.text        = ""
-        inseminacionField.text           = ""
-        errorText.text                   = ""
-        esHembra                         = false
-        especieSeleccionada              = false
-        razasList                        = []
-        fotoBase64                       = ""
-        fotoPreview.source               = ""
-        calNac.visible                   = false
-        calDes.visible                   = false
-        calPar.visible                   = false
-        calPal.visible                   = false
-        calIns.visible                   = false
-        padreDropdown.visible            = false
-        madreDropdown.visible            = false
+        especieCombo.currentIndex       = 0
+        identificadorField.text         = ""
+        fincaCombo.currentIndex         = 0
+        nacimientoField.text            = ""
+        sexoCombo.currentIndex          = 0
+        estadoCombo.currentIndex        = 0
+        razaField.text                  = ""
+        razaDropdown.visible            = false
+        padreSearch.text                = ""
+        padreSelectedId.text            = ""
+        madreSearch.text                = ""
+        madreSelectedId.text            = ""
+        chapetaField.text               = ""
+        desteteField.text               = ""
+        ultimoPartoField.text           = ""
+        ultimaPalpacionField.text       = ""
+        inseminacionField.text          = ""
+        errorText.text                  = ""
+        esHembra                        = false
+        especieSeleccionada             = false
+        razasList                       = []
+        fotoBase64                      = ""
+        fotoPreview.source              = ""
+        calNac.visible                  = false
+        calDes.visible                  = false
+        calPar.visible                  = false
+        calPal.visible                  = false
+        calIns.visible                  = false
+        padreDropdown.visible           = false
+        madreDropdown.visible           = false
     }
 
     function convertirFecha(f) {
@@ -85,43 +87,39 @@ Item {
         }
     }
 
-    Rectangle { anchors.fill: parent; color: Theme.fondo }
-
     ColumnLayout {
         anchors.fill: parent
-        spacing:      0
+        anchors.margins: 16
+        spacing: 8
 
-        // Encabezado
-        EncabezadoPantalla {
-            titulo:           "Nuevo Animal"
+        RowLayout {
             Layout.fillWidth: true
-            onVolverClicked:  vista.volver()
+            Button { text: "←"; onClicked: vista.volver() }
+            Text {
+                text: "Nuevo Animal"
+                font.pixelSize: 18
+                font.bold: true
+                Layout.fillWidth: true
+            }
         }
 
-        // Formulario scrolleable
         Flickable {
             id: formFlick
-            Layout.fillWidth:  true
+            Layout.fillWidth: true
             Layout.fillHeight: true
-            clip:              true
-            contentWidth:      width
-            contentHeight:     formColumn.implicitHeight + Theme.espacioXl
+            clip: true
+            contentWidth: width
+            contentHeight: formColumn.implicitHeight + 32
             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
 
             Column {
                 id: formColumn
-                width:   Math.min(Theme.anchoFormulario, formFlick.width - Theme.espacioLg * 2)
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: Theme.espacioLg
-                spacing: Theme.espacioMd
+                width: formFlick.width - 12
+                spacing: 8
 
-                // ── SECCIÓN: Identificación ────────────────────────────────
-                SectionHeader { titulo: "Identificación" }
-
-                // Especie
-                FieldLabel { texto: "Especie *" }
-                SelectorDesplegable {
+                // ── Especie ───────────────────────────────────────────────
+                Text { text: "Especie *"; width: parent.width }
+                ComboBox {
                     id: especieCombo
                     width: parent.width
                     model: ["Seleccionar especie...", "Bovino", "Caprino", "Bufalino"]
@@ -129,7 +127,8 @@ Item {
                     onCurrentIndexChanged: {
                         if (currentIndex > 0) {
                             vista.especieSeleccionada = true
-                            vista.razasList = appViewModel.getRazasPorEspecie(model[currentIndex])
+                            vista.razasList = appViewModel.getRazasPorEspecie(
+                                model[currentIndex])
                             razaField.text       = ""
                             razaDropdown.visible = false
                         } else {
@@ -141,18 +140,28 @@ Item {
                     }
                 }
 
-                // Identificador
-                FieldLabel { texto: "Identificador *"; deshabilitado: !vista.especieSeleccionada }
-                CampoTexto {
-                    id: identificadorField; width: parent.width
+                // ── Identificador ─────────────────────────────────────────
+                Text {
+                    text: "Identificador *"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                TextField {
+                    id: identificadorField
+                    width: parent.width
                     placeholderText: "Ej: ab1234"
                     enabled: vista.especieSeleccionada
                 }
 
-                // Finca
-                FieldLabel { texto: "Finca *"; deshabilitado: !vista.especieSeleccionada }
-                SelectorDesplegable {
-                    id: fincaCombo; width: parent.width
+                // ── Finca ─────────────────────────────────────────────────
+                Text {
+                    text: "Finca *"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                ComboBox {
+                    id: fincaCombo
+                    width: parent.width
                     enabled: vista.especieSeleccionada
                     model: {
                         var nombres = ["Seleccionar finca..."]
@@ -163,121 +172,141 @@ Item {
                     currentIndex: 0
                 }
 
-                // Sexo
-                FieldLabel { texto: "Sexo *"; deshabilitado: !vista.especieSeleccionada }
-                SelectorDesplegable {
-                    id: sexoCombo; width: parent.width
-                    model: ["Seleccionar sexo...", "Macho", "Hembra"]
-                    currentIndex: 0; enabled: vista.especieSeleccionada
-                    onCurrentIndexChanged: vista.esHembra = (currentIndex === 2)
+                // ── Nacimiento ────────────────────────────────────────────
+                Text {
+                    text: "Nacimiento"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
                 }
-
-                // Estado
-                FieldLabel { texto: "Estado *"; deshabilitado: !vista.especieSeleccionada }
-                SelectorDesplegable {
-                    id: estadoCombo; width: parent.width
-                    model: ["Seleccionar estado...", "Activo", "Muerto", "Vendido", "Enfermo"]
-                    currentIndex: 0; enabled: vista.especieSeleccionada
-                }
-
-                // ── SECCIÓN: Características ───────────────────────────────
-                SectionHeader { titulo: "Características" }
-
-                // Nacimiento
-                FieldLabel { texto: "Fecha de nacimiento"; deshabilitado: !vista.especieSeleccionada }
                 Row {
-                    width: parent.width; spacing: Theme.espacioSm
-                    CampoTexto {
+                    width: parent.width
+                    spacing: 4
+                    TextField {
                         id: nacimientoField
-                        width: parent.width - 52
+                        width: parent.width - 44
                         placeholderText: "dd/mm/yyyy"
-                        readOnly: true; enabled: vista.especieSeleccionada
+                        readOnly: true
+                        enabled: vista.especieSeleccionada
                     }
-                    AbstractButton {
-                        width: 48; height: Theme.alturaCampo
+                    Button {
+                        width: 40
+                        text: "📅"
                         enabled: vista.especieSeleccionada
                         onClicked: {
                             calDes.visible = false; calPar.visible = false
                             calPal.visible = false; calIns.visible = false
                             calNac.visible = !calNac.visible
                         }
-                        background: Rectangle {
-                            radius: Theme.radioSm
-                            color: parent.pressed ? Theme.primarioHover
-                                 : parent.hovered ? Theme.primarioClaro
-                                                  : Theme.superficie
-                            border.color: Theme.borde; border.width: 1
-                        }
-                        contentItem: Text {
-                            text: "📅"; font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment:   Text.AlignVCenter
-                        }
                     }
                 }
                 CalendarPopup {
-                    id: calNac; width: parent.width; visible: false
-                    onFechaSeleccionada: function(f) { nacimientoField.text = f; calNac.visible = false }
+                    id: calNac
+                    width: parent.width
+                    visible: false
+                    onFechaSeleccionada: function(f) {
+                        nacimientoField.text = f
+                        calNac.visible       = false
+                    }
                 }
 
-                // Raza (con autocomplete)
-                FieldLabel { texto: "Raza"; deshabilitado: !vista.especieSeleccionada }
-                CampoTexto {
-                    id: razaField; width: parent.width
+                // ── Sexo ──────────────────────────────────────────────────
+                Text {
+                    text: "Sexo *"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                ComboBox {
+                    id: sexoCombo
+                    width: parent.width
+                    model: ["Seleccionar sexo...", "Macho", "Hembra"]
+                    currentIndex: 0
+                    enabled: vista.especieSeleccionada
+                    onCurrentIndexChanged: vista.esHembra = (currentIndex === 2)
+                }
+
+                // ── Estado ────────────────────────────────────────────────
+                Text {
+                    text: "Estado *"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                ComboBox {
+                    id: estadoCombo
+                    width: parent.width
+                    model: ["Seleccionar estado...", "Activo", "Muerto", "Vendido", "Enfermo"]
+                    currentIndex: 0
+                    enabled: vista.especieSeleccionada
+                }
+
+                // ── Raza ──────────────────────────────────────────────────
+                Text {
+                    text: "Raza"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                TextField {
+                    id: razaField
+                    width: parent.width
                     placeholderText: "Buscar raza..."
                     enabled: vista.especieSeleccionada
                     onTextChanged: {
                         if (!vista.especieSeleccionada || vista.razasList.length === 0) {
-                            razaDropdown.visible = false; return
+                            razaDropdown.visible = false
+                            return
                         }
-                        var busq     = text.toLowerCase()
+                        var busq = text.toLowerCase()
                         var filtradas = []
                         for (var i = 0; i < vista.razasList.length; i++)
                             if (vista.razasList[i].toLowerCase().indexOf(busq) >= 0)
                                 filtradas.push(vista.razasList[i])
                         var esExacta = false
                         for (var j = 0; j < vista.razasList.length; j++)
-                            if (vista.razasList[j].toLowerCase() === busq) { esExacta = true; break }
+                            if (vista.razasList[j].toLowerCase() === busq) {
+                                esExacta = true; break
+                            }
                         razaListView.model   = filtradas
                         razaDropdown.visible = filtradas.length > 0 && !esExacta
                     }
                     onActiveFocusChanged: {
-                        if (activeFocus && vista.especieSeleccionada && vista.razasList.length > 0) {
+                        if (activeFocus && vista.especieSeleccionada
+                                && vista.razasList.length > 0) {
                             razaListView.model   = vista.razasList
                             razaDropdown.visible = true
                         }
                     }
                 }
                 Rectangle {
-                    id: razaDropdown; width: parent.width; height: 160
-                    border.color: Theme.borde; radius: Theme.radioSm
-                    clip: true; visible: false; color: Theme.superficie
+                    id: razaDropdown
+                    width: parent.width
+                    height: 150
+                    border.color: "#999"
+                    clip: true
+                    visible: false
                     ListView {
-                        id: razaListView; anchors.fill: parent; clip: true; model: []
+                        id: razaListView
+                        anchors.fill: parent
+                        clip: true
+                        model: []
                         delegate: ItemDelegate {
                             width: razaListView.width
                             text: modelData
-                            font.family: Theme.fuente; font.pixelSize: Theme.tamCuerpo
-                            onClicked: { razaField.text = modelData; razaDropdown.visible = false }
+                            onClicked: {
+                                razaField.text       = modelData
+                                razaDropdown.visible = false
+                            }
                         }
                     }
                 }
 
-                // Chapeta
-                FieldLabel { texto: "Chapeta"; deshabilitado: !vista.especieSeleccionada }
-                CampoTexto {
-                    id: chapetaField; width: parent.width
-                    placeholderText: "Número de chapeta (opcional)"
-                    enabled: vista.especieSeleccionada
+                // ── Padre ─────────────────────────────────────────────────
+                Text {
+                    text: "Padre"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
                 }
-
-                // ── SECCIÓN: Genealogía ────────────────────────────────────
-                SectionHeader { titulo: "Genealogía" }
-
-                // Padre
-                FieldLabel { texto: "Padre"; deshabilitado: !vista.especieSeleccionada }
-                CampoTexto {
-                    id: padreSearch; width: parent.width
+                TextField {
+                    id: padreSearch
+                    width: parent.width
                     placeholderText: "Buscar por identificador..."
                     enabled: vista.especieSeleccionada
                     onTextChanged: {
@@ -287,7 +316,8 @@ Item {
                         var filtrados = []
                         for (var i = 0; i < vista.todosAnimales.length; i++) {
                             var a = vista.todosAnimales[i]
-                            if (a.sexo === "Macho" && a.especie === especie &&
+                            if (a.sexo === "Macho" &&
+                                a.especie === especie &&
                                 String(a.identificador).toLowerCase().indexOf(busq) >= 0)
                                 filtrados.push(a)
                         }
@@ -301,7 +331,8 @@ Item {
                             var machos = []
                             for (var i = 0; i < vista.todosAnimales.length; i++) {
                                 var a = vista.todosAnimales[i]
-                                if (a.sexo === "Macho" && a.especie === especie) machos.push(a)
+                                if (a.sexo === "Macho" && a.especie === especie)
+                                    machos.push(a)
                             }
                             padreListView.model   = machos
                             padreDropdown.visible = machos.length > 0
@@ -309,15 +340,20 @@ Item {
                     }
                 }
                 Rectangle {
-                    id: padreDropdown; width: parent.width; height: 130
-                    border.color: Theme.borde; radius: Theme.radioSm
-                    clip: true; visible: false; color: Theme.superficie
+                    id: padreDropdown
+                    width: parent.width
+                    height: 120
+                    border.color: "#999"
+                    clip: true
+                    visible: false
                     ListView {
-                        id: padreListView; anchors.fill: parent; clip: true; model: []
+                        id: padreListView
+                        anchors.fill: parent
+                        clip: true
+                        model: []
                         delegate: ItemDelegate {
                             width: padreListView.width
                             text: String(modelData.identificador) + " — " + modelData.especie
-                            font.family: Theme.fuente; font.pixelSize: Theme.tamCuerpo
                             onClicked: {
                                 padreSelectedId.text  = modelData.id
                                 padreSearch.text      = String(modelData.identificador)
@@ -327,14 +363,22 @@ Item {
                     }
                 }
                 Text {
-                    id: padreSelectedId; text: ""; color: "#555"
-                    visible: false; width: parent.width
+                    id: padreSelectedId
+                    text: ""
+                    color: "#555"
+                    visible: false
+                    width: parent.width
                 }
 
-                // Madre
-                FieldLabel { texto: "Madre"; deshabilitado: !vista.especieSeleccionada }
-                CampoTexto {
-                    id: madreSearch; width: parent.width
+                // ── Madre ─────────────────────────────────────────────────
+                Text {
+                    text: "Madre"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                TextField {
+                    id: madreSearch
+                    width: parent.width
                     placeholderText: "Buscar por identificador..."
                     enabled: vista.especieSeleccionada
                     onTextChanged: {
@@ -344,7 +388,8 @@ Item {
                         var filtradas = []
                         for (var i = 0; i < vista.todosAnimales.length; i++) {
                             var a = vista.todosAnimales[i]
-                            if (a.sexo === "Hembra" && a.especie === especie &&
+                            if (a.sexo === "Hembra" &&
+                                a.especie === especie &&
                                 String(a.identificador).toLowerCase().indexOf(busq) >= 0)
                                 filtradas.push(a)
                         }
@@ -358,7 +403,8 @@ Item {
                             var hembras = []
                             for (var i = 0; i < vista.todosAnimales.length; i++) {
                                 var a = vista.todosAnimales[i]
-                                if (a.sexo === "Hembra" && a.especie === especie) hembras.push(a)
+                                if (a.sexo === "Hembra" && a.especie === especie)
+                                    hembras.push(a)
                             }
                             madreListView.model   = hembras
                             madreDropdown.visible = hembras.length > 0
@@ -366,15 +412,20 @@ Item {
                     }
                 }
                 Rectangle {
-                    id: madreDropdown; width: parent.width; height: 130
-                    border.color: Theme.borde; radius: Theme.radioSm
-                    clip: true; visible: false; color: Theme.superficie
+                    id: madreDropdown
+                    width: parent.width
+                    height: 120
+                    border.color: "#999"
+                    clip: true
+                    visible: false
                     ListView {
-                        id: madreListView; anchors.fill: parent; clip: true; model: []
+                        id: madreListView
+                        anchors.fill: parent
+                        clip: true
+                        model: []
                         delegate: ItemDelegate {
                             width: madreListView.width
                             text: String(modelData.identificador) + " — " + modelData.especie
-                            font.family: Theme.fuente; font.pixelSize: Theme.tamCuerpo
                             onClicked: {
                                 madreSelectedId.text  = modelData.id
                                 madreSearch.text      = String(modelData.identificador)
@@ -384,212 +435,218 @@ Item {
                     }
                 }
                 Text {
-                    id: madreSelectedId; text: ""; color: "#555"
-                    visible: false; width: parent.width
+                    id: madreSelectedId
+                    text: ""
+                    color: "#555"
+                    visible: false
+                    width: parent.width
                 }
 
-                // ── SECCIÓN: Otras fechas ──────────────────────────────────
-                SectionHeader { titulo: "Otras fechas" }
+                // ── Chapeta ───────────────────────────────────────────────
+                Text {
+                    text: "Chapeta"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                TextField {
+                    id: chapetaField
+                    width: parent.width
+                    placeholderText: "Opcional"
+                    enabled: vista.especieSeleccionada
+                }
 
-                // Fecha Destete
-                FieldLabel { texto: "Fecha destete"; deshabilitado: !vista.especieSeleccionada }
+                // ── Fecha Destete ─────────────────────────────────────────
+                Text {
+                    text: "Fecha Destete"
+                    opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
                 Row {
-                    width: parent.width; spacing: Theme.espacioSm
-                    CampoTexto {
-                        id: desteteField; width: parent.width - 52
-                        placeholderText: "dd/mm/yyyy"; readOnly: true
+                    width: parent.width
+                    spacing: 4
+                    TextField {
+                        id: desteteField
+                        width: parent.width - 44
+                        placeholderText: "dd/mm/yyyy"
+                        readOnly: true
                         enabled: vista.especieSeleccionada
                     }
-                    AbstractButton {
-                        width: 48; height: Theme.alturaCampo
+                    Button {
+                        width: 40
+                        text: "📅"
                         enabled: vista.especieSeleccionada
                         onClicked: {
                             calNac.visible = false; calPar.visible = false
                             calPal.visible = false; calIns.visible = false
                             calDes.visible = !calDes.visible
                         }
-                        background: Rectangle {
-                            radius: Theme.radioSm; color: Theme.superficie
-                            border.color: Theme.borde; border.width: 1
-                        }
-                        contentItem: Text {
-                            text: "📅"; font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment:   Text.AlignVCenter
-                        }
                     }
                 }
                 CalendarPopup {
-                    id: calDes; width: parent.width; visible: false
-                    onFechaSeleccionada: function(f) { desteteField.text = f; calDes.visible = false }
+                    id: calDes
+                    width: parent.width
+                    visible: false
+                    onFechaSeleccionada: function(f) {
+                        desteteField.text = f
+                        calDes.visible    = false
+                    }
                 }
 
-                // Campos solo para hembra
-                FieldLabel { texto: "Fecha último parto"; visible: vista.esHembra }
-                Row {
-                    width: parent.width; spacing: Theme.espacioSm
+                // ── Campos hembra ─────────────────────────────────────────
+                Text {
+                    text: "Fecha Último Parto"
                     visible: vista.esHembra
-                    CampoTexto {
-                        id: ultimoPartoField; width: parent.width - 52
-                        placeholderText: "dd/mm/yyyy"; readOnly: true
+                    width: parent.width
+                }
+                Row {
+                    width: parent.width
+                    spacing: 4
+                    visible: vista.esHembra
+                    TextField {
+                        id: ultimoPartoField
+                        width: parent.width - 44
+                        placeholderText: "dd/mm/yyyy"
+                        readOnly: true
                     }
-                    AbstractButton {
-                        width: 48; height: Theme.alturaCampo
+                    Button {
+                        width: 40
+                        text: "📅"
                         onClicked: {
                             calNac.visible = false; calDes.visible = false
                             calPal.visible = false; calIns.visible = false
                             calPar.visible = !calPar.visible
                         }
-                        background: Rectangle {
-                            radius: Theme.radioSm; color: Theme.superficie
-                            border.color: Theme.borde; border.width: 1
-                        }
-                        contentItem: Text {
-                            text: "📅"; font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment:   Text.AlignVCenter
-                        }
                     }
                 }
                 CalendarPopup {
-                    id: calPar; width: parent.width; visible: false
-                    onFechaSeleccionada: function(f) { ultimoPartoField.text = f; calPar.visible = false }
+                    id: calPar
+                    width: parent.width
+                    visible: false
+                    onFechaSeleccionada: function(f) {
+                        ultimoPartoField.text = f
+                        calPar.visible        = false
+                    }
                 }
 
-                FieldLabel { texto: "Fecha última palpación"; visible: vista.esHembra }
-                Row {
-                    width: parent.width; spacing: Theme.espacioSm
+                Text {
+                    text: "Fecha Última Palpación"
                     visible: vista.esHembra
-                    CampoTexto {
-                        id: ultimaPalpacionField; width: parent.width - 52
-                        placeholderText: "dd/mm/yyyy"; readOnly: true
+                    width: parent.width
+                }
+                Row {
+                    width: parent.width
+                    spacing: 4
+                    visible: vista.esHembra
+                    TextField {
+                        id: ultimaPalpacionField
+                        width: parent.width - 44
+                        placeholderText: "dd/mm/yyyy"
+                        readOnly: true
                     }
-                    AbstractButton {
-                        width: 48; height: Theme.alturaCampo
+                    Button {
+                        width: 40
+                        text: "📅"
                         onClicked: {
                             calNac.visible = false; calDes.visible = false
                             calPar.visible = false; calIns.visible = false
                             calPal.visible = !calPal.visible
                         }
-                        background: Rectangle {
-                            radius: Theme.radioSm; color: Theme.superficie
-                            border.color: Theme.borde; border.width: 1
-                        }
-                        contentItem: Text {
-                            text: "📅"; font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment:   Text.AlignVCenter
-                        }
                     }
                 }
                 CalendarPopup {
-                    id: calPal; width: parent.width; visible: false
-                    onFechaSeleccionada: function(f) { ultimaPalpacionField.text = f; calPal.visible = false }
+                    id: calPal
+                    width: parent.width
+                    visible: false
+                    onFechaSeleccionada: function(f) {
+                        ultimaPalpacionField.text = f
+                        calPal.visible            = false
+                    }
                 }
 
-                FieldLabel { texto: "Fecha inseminación"; visible: vista.esHembra }
-                Row {
-                    width: parent.width; spacing: Theme.espacioSm
+                Text {
+                    text: "Fecha Inseminación"
                     visible: vista.esHembra
-                    CampoTexto {
-                        id: inseminacionField; width: parent.width - 52
-                        placeholderText: "dd/mm/yyyy"; readOnly: true
+                    width: parent.width
+                }
+                Row {
+                    width: parent.width
+                    spacing: 4
+                    visible: vista.esHembra
+                    TextField {
+                        id: inseminacionField
+                        width: parent.width - 44
+                        placeholderText: "dd/mm/yyyy"
+                        readOnly: true
                     }
-                    AbstractButton {
-                        width: 48; height: Theme.alturaCampo
+                    Button {
+                        width: 40
+                        text: "📅"
                         onClicked: {
                             calNac.visible = false; calDes.visible = false
                             calPar.visible = false; calPal.visible = false
                             calIns.visible = !calIns.visible
                         }
-                        background: Rectangle {
-                            radius: Theme.radioSm; color: Theme.superficie
-                            border.color: Theme.borde; border.width: 1
-                        }
-                        contentItem: Text {
-                            text: "📅"; font.pixelSize: 18
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment:   Text.AlignVCenter
-                        }
                     }
                 }
                 CalendarPopup {
-                    id: calIns; width: parent.width; visible: false
-                    onFechaSeleccionada: function(f) { inseminacionField.text = f; calIns.visible = false }
+                    id: calIns
+                    width: parent.width
+                    visible: false
+                    onFechaSeleccionada: function(f) {
+                        inseminacionField.text = f
+                        calIns.visible         = false
+                    }
                 }
 
-                // ── SECCIÓN: Foto ──────────────────────────────────────────
-                SectionHeader { titulo: "Foto" }
-
-                Row {
-                    width: parent.width; spacing: Theme.espacioMd
+                // ── Foto ──────────────────────────────────────────────────
+                Text {
+                    text: "Foto"
                     opacity: vista.especieSeleccionada ? 1 : 0.4
+                    width: parent.width
+                }
+                Row {
+                    width: parent.width
+                    spacing: 8
 
                     Rectangle {
-                        width: 110; height: 110
-                        radius: Theme.radioSm
-                        color: Theme.superficieAlt
-                        border.color: Theme.borde; border.width: 1
+                        width: 100
+                        height: 100
+                        border.color: "#ccc"
+                        color: "#f5f5f5"
 
                         Image {
-                            id: fotoPreview; anchors.fill: parent
+                            id: fotoPreview
+                            anchors.fill: parent
                             fillMode: Image.PreserveAspectCrop
                             source: ""
                             visible: source !== ""
                         }
 
-                        Column {
-                            anchors.centerIn: parent; spacing: Theme.espacioXs
-                            visible: fotoPreview.source === ""
-                            Text { anchors.horizontalCenter: parent.horizontalCenter; text: "📷"; font.pixelSize: 28 }
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                text: "Sin foto"
-                                font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-                                color: Theme.textoSecundario
-                            }
-                        }
-                    }
-
-                    Column {
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: Theme.espacioSm
-                        BotonSecundario {
-                            text: "Seleccionar foto"
-                            width: 160
-                            enabled: vista.especieSeleccionada
-                            onClicked: fotoDialog.open()
-                        }
                         Text {
-                            text: "PNG, JPG, JPEG, BMP"
-                            font.family: Theme.fuente; font.pixelSize: Theme.tamMicro
-                            color: Theme.textoSecundario
+                            anchors.centerIn: parent
+                            text: "Sin foto"
+                            color: "#999"
+                            visible: fotoPreview.source === ""
                         }
                     }
-                }
 
-                Item { height: Theme.espacioMd }
-
-                // ── Error ──────────────────────────────────────────────────
-                Rectangle {
-                    width: parent.width
-                    height: errorText.implicitHeight + Theme.espacioSm * 2
-                    radius: Theme.radioSm; color: Theme.criticoFondo
-                    border.color: Theme.critico; border.width: 1
-                    visible: errorText.text !== ""
-
-                    Text {
-                        id: errorText
-                        anchors.centerIn: parent
-                        width: parent.width - Theme.espacioMd
-                        color: Theme.critico
-                        font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-                        wrapMode: Text.WordWrap; horizontalAlignment: Text.AlignHCenter
+                    Button {
+                        text: "Seleccionar foto"
+                        anchors.verticalCenter: parent.verticalCenter
+                        enabled: vista.especieSeleccionada
+                        onClicked: fotoDialog.open()
                     }
                 }
 
-                // ── Botón registrar ────────────────────────────────────────
-                BotonPrimario {
+                Text {
+                    id: errorText
+                    color: "red"
+                    visible: text !== ""
+                    width: parent.width
+                    wrapMode: Text.WordWrap
+                }
+
+                Button {
                     width: parent.width
                     text: "Registrar Animal"
                     onClicked: {
@@ -609,19 +666,20 @@ Item {
                         if (estadoCombo.currentIndex === 0) {
                             errorText.text = "Selecciona el estado"; return
                         }
+
                         var idxFinca = fincaCombo.currentIndex - 1
                         var data = {
-                            "especie":              especieCombo.model[especieCombo.currentIndex],
-                            "identificador":        identificadorField.text,
-                            "idFinca":              vista.fincasList[idxFinca].id,
-                            "nacimiento":           vista.convertirFecha(nacimientoField.text),
-                            "sexo":                 sexoCombo.model[sexoCombo.currentIndex],
-                            "estado":               estadoCombo.model[estadoCombo.currentIndex],
-                            "raza":                 razaField.text,
-                            "padre":                padreSelectedId.text,
-                            "madre":                madreSelectedId.text,
-                            "chapeta":              chapetaField.text,
-                            "fechaDestete":         vista.convertirFecha(desteteField.text),
+                            "especie":       especieCombo.model[especieCombo.currentIndex],
+                            "identificador": identificadorField.text,
+                            "idFinca":       vista.fincasList[idxFinca].id,
+                            "nacimiento":    vista.convertirFecha(nacimientoField.text),
+                            "sexo":          sexoCombo.model[sexoCombo.currentIndex],
+                            "estado":        estadoCombo.model[estadoCombo.currentIndex],
+                            "raza":          razaField.text,
+                            "padre":         padreSelectedId.text,
+                            "madre":         madreSelectedId.text,
+                            "chapeta":       chapetaField.text,
+                            "fechaDestete":  vista.convertirFecha(desteteField.text),
                             "fechaUltimoParto":
                                 vista.esHembra ? vista.convertirFecha(ultimoPartoField.text) : "",
                             "fechaUltimaPalpacion":
@@ -629,8 +687,11 @@ Item {
                             "fechaInseminacion":
                                 vista.esHembra ? vista.convertirFecha(inseminacionField.text) : ""
                         }
+
                         if (appViewModel.createGanado(data)) {
+                            // Si hay foto, actualizarla después del create
                             if (vista.fotoBase64 !== "") {
+                                // Obtener el último animal creado por identificador
                                 var todos = appViewModel.getAllGanado()
                                 for (var i = 0; i < todos.length; i++) {
                                     if (todos[i].identificador === identificadorField.text) {
@@ -641,44 +702,12 @@ Item {
                             }
                             vista.animalRegistrado()
                             vista.volver()
-                        }
+                        } 
                     }
                 }
 
-                BotonSecundario {
-                    width: parent.width
-                    text:  "Cancelar"
-                    onClicked: vista.volver()
-                }
-
-                Item { height: Theme.espacioXl }
+                Item { height: 16 }
             }
         }
-    }
-
-    // Componentes inline para el formulario
-    component SectionHeader: Rectangle {
-        property string titulo: ""
-        width: parent ? parent.width : 300
-        height: secText.implicitHeight + Theme.espacioMd
-        color: Theme.superficieAlt
-        radius: Theme.radioSm
-
-        Text {
-            id: secText
-            anchors { left: parent.left; verticalCenter: parent.verticalCenter; leftMargin: Theme.espacioSm }
-            text:        titulo
-            font.family: Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-            font.weight: Font.DemiBold; color: Theme.primario
-        }
-    }
-
-    component FieldLabel: Text {
-        property string texto:         ""
-        property bool   deshabilitado: false
-        text:           texto
-        font.family:    Theme.fuente; font.pixelSize: Theme.tamEtiqueta
-        color:          deshabilitado ? Theme.deshabilitado : Theme.textoSecundario
-        width:          parent ? parent.width : 300
     }
 }

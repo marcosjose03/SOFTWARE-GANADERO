@@ -1,4 +1,4 @@
-set(SOURCES
+﻿set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/UuidGenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/infrastructure/utils/DateTimeUtils.cpp
@@ -22,26 +22,12 @@ set_target_properties(SoftwareGanadero PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-# Theme.qml como singleton en la misma carpeta que los screens
-set_source_files_properties(ui/screens/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
-
 qt_add_qml_module(SoftwareGanadero
     URI SoftwareGanadero
     VERSION 1.0
     NO_CACHEGEN
     QML_FILES
         ui/main.qml
-        # Sistema de diseño (colocados en ui/screens/ para auto-import)
-        ui/screens/Theme.qml
-        ui/screens/BotonPrimario.qml
-        ui/screens/BotonSecundario.qml
-        ui/screens/CampoTexto.qml
-        ui/screens/CampoFormulario.qml
-        ui/screens/SelectorDesplegable.qml
-        ui/screens/Tarjeta.qml
-        ui/screens/EncabezadoPantalla.qml
-        ui/screens/EstadoVacio.qml
-        # Pantallas
         ui/screens/LoginScreen.qml
         ui/screens/RegisterScreen.qml
         ui/screens/MenuScreen.qml
