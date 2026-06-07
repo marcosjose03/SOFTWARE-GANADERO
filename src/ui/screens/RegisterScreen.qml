@@ -13,58 +13,86 @@ Item {
         }
     }
 
-    ColumnLayout {
+    Rectangle { anchors.fill: parent; color: "white" }
+
+    Rectangle {
         anchors.centerIn: parent
-        width: 300
-        spacing: 12
+        width: 320
+        height: registerCol.implicitHeight + 48
+        color: "white"
+        border.color: "#e0e0e0"
+        border.width: 1
+        radius: 8
 
-        Text { text: "Nombre"; Layout.fillWidth: true }
-        TextField {
-            id: nombreField
-            Layout.fillWidth: true
-            placeholderText: "Tu nombre"
-        }
+        ColumnLayout {
+            id: registerCol
+            anchors { fill: parent; margins: 24 }
+            spacing: 10
 
-        Text { text: "Correo electrónico"; Layout.fillWidth: true }
-        TextField {
-            id: emailField
-            Layout.fillWidth: true
-            placeholderText: "correo@ejemplo.com"
-        }
-
-        Text { text: "Contraseña"; Layout.fillWidth: true }
-        TextField {
-            id: passField
-            Layout.fillWidth: true
-            echoMode: TextInput.Password
-            placeholderText: "••••••••"
-        }
-
-        Text {
-            id: errorText
-            color: "red"
-            visible: text !== ""
-            Layout.fillWidth: true
-            wrapMode: Text.WordWrap
-        }
-
-        Button {
-            text: "Crear cuenta"
-            Layout.fillWidth: true
-            onClicked: {
-                errorText.text = ""
-                if (nombreField.text === "" || emailField.text === "" || passField.text === "") {
-                    errorText.text = "Por favor completa todos los campos"
-                    return
-                }
-                appViewModel.createAccount(nombreField.text, emailField.text, passField.text)
+            Text {
+                text: "GanSoft"
+                font.pixelSize: 24
+                font.bold: true
+                color: "#1a1a1a"
+                Layout.alignment: Qt.AlignHCenter
             }
-        }
+            Text {
+                text: "Crear cuenta"
+                font.pixelSize: 13
+                color: "#666666"
+                Layout.alignment: Qt.AlignHCenter
+                bottomPadding: 8
+            }
 
-        Button {
-            text: "← Volver al login"
-            Layout.fillWidth: true
-            onClicked: appViewModel.goToLogin()
+            Text { text: "Nombre"; color: "#333333"; font.pixelSize: 13; Layout.fillWidth: true }
+            TextField {
+                id: nombreField
+                Layout.fillWidth: true
+                placeholderText: "Tu nombre"
+            }
+
+            Text { text: "Correo electrónico"; color: "#333333"; font.pixelSize: 13; Layout.fillWidth: true }
+            TextField {
+                id: emailField
+                Layout.fillWidth: true
+                placeholderText: "correo@ejemplo.com"
+            }
+
+            Text { text: "Contraseña"; color: "#333333"; font.pixelSize: 13; Layout.fillWidth: true }
+            TextField {
+                id: passField
+                Layout.fillWidth: true
+                echoMode: TextInput.Password
+                placeholderText: "••••••••"
+            }
+
+            Text {
+                id: errorText
+                color: "#cc0000"
+                visible: text !== ""
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                font.pixelSize: 13
+            }
+
+            Button {
+                text: "Crear cuenta"
+                Layout.fillWidth: true
+                onClicked: {
+                    errorText.text = ""
+                    if (nombreField.text === "" || emailField.text === "" || passField.text === "") {
+                        errorText.text = "Por favor completa todos los campos"
+                        return
+                    }
+                    appViewModel.createAccount(nombreField.text, emailField.text, passField.text)
+                }
+            }
+
+            Button {
+                text: "← Volver al login"
+                Layout.fillWidth: true
+                onClicked: appViewModel.goToLogin()
+            }
         }
     }
 }

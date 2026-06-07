@@ -6,52 +6,127 @@ Item {
     width: parent ? parent.width : 1024
     height: parent ? parent.height : 768
 
+    Rectangle { anchors.fill: parent; color: "white" }
+
     ColumnLayout {
-        anchors.centerIn: parent
-        width: 300
-        spacing: 8
+        anchors.fill: parent
+        spacing: 0
 
-        Text {
-            text: "Bienvenido " + appViewModel.userName
-            font.pixelSize: 24
-            font.bold: true
+        // ── Barra superior ────────────────────────────────────────────────
+        Rectangle {
             Layout.fillWidth: true
-            horizontalAlignment: Text.AlignHCenter
+            height: 56
+            color: "#fafafa"
+
+            Rectangle {
+                anchors.left: parent.left; anchors.right: parent.right
+                anchors.bottom: parent.bottom; height: 1; color: "#e0e0e0"
+            }
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.leftMargin: 24
+                anchors.rightMargin: 24
+                spacing: 12
+
+                Text {
+                    text: "GanSoft"
+                    font.pixelSize: 18
+                    font.bold: true
+                    color: "#1a1a1a"
+                }
+
+                Item { Layout.fillWidth: true }
+
+                Text {
+                    text: "Bienvenido, " + appViewModel.userName
+                    font.pixelSize: 13
+                    color: "#555555"
+                }
+
+                Button {
+                    text: "Cerrar Sesión"
+                    onClicked: appViewModel.logout()
+                }
+
+                Button {
+                    text: "Salir"
+                    onClicked: Qt.quit()
+                }
+            }
         }
 
-        Button { text: "Herramienta visual"; Layout.fillWidth: true; enabled: false }
-        Button { text: "Alertas";            Layout.fillWidth: true; enabled: false }
-        Button { text: "Proyecciones";       Layout.fillWidth: true; enabled: false }
+        // ── Área de contenido ─────────────────────────────────────────────
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
 
-        Button {
-            text: "Inventario"
-            Layout.fillWidth: true
-            onClicked: appViewModel.goToInventario()
-        }
-        Button {
-            text: "Registro Reproductivo"
-            Layout.fillWidth: true
-            onClicked: appViewModel.goToRegistroReproductivo()
-        }
-        Button {
-            text: "Registro de Leche"
-            Layout.fillWidth: true
-            onClicked: appViewModel.goToRegistroLeche()
-        }
-        Button {
-            text: "Registro de Peso"
-            Layout.fillWidth: true
-            onClicked: appViewModel.goToRegistroPeso()
-        }
-        Button {
-            text: "Cerrar Sesión"
-            Layout.fillWidth: true
-            onClicked: appViewModel.logout()
-        }
-        Button {
-            text: "Salir"
-            Layout.fillWidth: true
-            onClicked: Qt.quit()
+            ColumnLayout {
+                anchors.centerIn: parent
+                width: Math.min(560, parent.width - 48)
+                spacing: 6
+
+                Text {
+                    text: "Gestión del hato"
+                    font.pixelSize: 12
+                    color: "#888888"
+                    Layout.fillWidth: true
+                    bottomPadding: 4
+                }
+
+                GridLayout {
+                    Layout.fillWidth: true
+                    columns: 2
+                    columnSpacing: 10
+                    rowSpacing: 10
+
+                    Button {
+                        Layout.fillWidth: true
+                        implicitHeight: 52
+                        text: "Inventario"
+                        onClicked: appViewModel.goToInventario()
+                    }
+                    Button {
+                        Layout.fillWidth: true
+                        implicitHeight: 52
+                        text: "Registro Reproductivo"
+                        onClicked: appViewModel.goToRegistroReproductivo()
+                    }
+                    Button {
+                        Layout.fillWidth: true
+                        implicitHeight: 52
+                        text: "Registro de Leche"
+                        onClicked: appViewModel.goToRegistroLeche()
+                    }
+                    Button {
+                        Layout.fillWidth: true
+                        implicitHeight: 52
+                        text: "Registro de Peso"
+                        onClicked: appViewModel.goToRegistroPeso()
+                    }
+                }
+
+                Item { height: 16 }
+
+                Text {
+                    text: "Análisis y proyecciones"
+                    font.pixelSize: 12
+                    color: "#888888"
+                    Layout.fillWidth: true
+                    bottomPadding: 4
+                }
+
+                GridLayout {
+                    Layout.fillWidth: true
+                    columns: 3
+                    columnSpacing: 10
+                    rowSpacing: 10
+
+                    Button { Layout.fillWidth: true; implicitHeight: 52; text: "Herramienta visual"; enabled: false }
+                    Button { Layout.fillWidth: true; implicitHeight: 52; text: "Alertas";            enabled: false }
+                    Button { Layout.fillWidth: true; implicitHeight: 52; text: "Proyecciones";       enabled: false }
+                }
+            }
         }
     }
 }

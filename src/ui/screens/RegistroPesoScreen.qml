@@ -47,6 +47,8 @@ Item {
 
     Component.onCompleted: recargarAnimales()
 
+    Rectangle { anchors.fill: parent; color: "white" }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16

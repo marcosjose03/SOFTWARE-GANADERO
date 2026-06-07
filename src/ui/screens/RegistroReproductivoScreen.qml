@@ -38,6 +38,8 @@ Item {
 
     Component.onCompleted: recargarAnimales()
 
+    Rectangle { anchors.fill: parent; color: "white" }
+
     // ── Vista principal ───────────────────────────────────────────────────
     ColumnLayout {
         anchors.fill: parent
@@ -48,6 +50,11 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             Button { text: "←"; onClicked: appViewModel.goToMenu() }
+            Text {
+                text: "Registro Reproductivo"
+                font.pixelSize: 16; font.bold: true; color: "#1a1a1a"
+            }
+            Item { width: 8 }
             CheckBox {
                 id: checkBovino
                 text: "Bovino"

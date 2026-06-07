@@ -31,6 +31,8 @@ Item {
 
     Component.onCompleted: recargar()
 
+    Rectangle { anchors.fill: parent; color: "white" }
+
     function convertirFecha(f) {
         if (!f || f === "") return ""
         var p = f.split("/")
@@ -46,6 +48,7 @@ Item {
         height: 280
         modal: true
         closePolicy: Popup.NoAutoClose
+        background: Rectangle { color: "white"; border.color: "#e0e0e0"; radius: 6 }
 
         property bool   esEdicion:     false
         property string fechaOriginal: ""

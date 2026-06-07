@@ -7,7 +7,21 @@ ApplicationWindow {
     visible: true
     width: 1024
     height: 768
-    title: "Software Ganadero"
+    title: "GanSoft — Software Ganadero"
+    color: "white"
+
+    palette.window:          "#ffffff"
+    palette.windowText:      "#1a1a1a"
+    palette.button:          "#f2f2f2"
+    palette.buttonText:      "#1a1a1a"
+    palette.base:            "#ffffff"
+    palette.text:            "#1a1a1a"
+    palette.highlight:       "#2d6a4f"
+    palette.highlightedText: "#ffffff"
+    palette.mid:             "#c8c8c8"
+    palette.midlight:        "#e8e8e8"
+    palette.dark:            "#aaaaaa"
+    palette.shadow:          "#888888"
 
     Connections {
         target: appViewModel

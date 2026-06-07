@@ -33,6 +33,8 @@ Item {
 
     Component.onCompleted: cargar()
 
+    Rectangle { anchors.fill: parent; color: "white" }
+
     Dialog {
         id: deleteDialog
         title: "Eliminar animal"

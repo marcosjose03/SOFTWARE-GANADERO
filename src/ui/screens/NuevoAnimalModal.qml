@@ -73,6 +73,8 @@ Item {
 
     Component.onCompleted: cargar()
 
+    Rectangle { anchors.fill: parent; color: "white" }
+
     Platform.FileDialog {
         id: fotoDialog
         title: "Seleccionar imagen"
