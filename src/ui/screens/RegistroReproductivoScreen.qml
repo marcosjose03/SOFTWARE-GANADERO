@@ -131,7 +131,7 @@ Item {
                 mensaje:    "No hay animales registrados.\nAgrega tu primer animal para comenzar."
                 textoBoton: "+ Agregar Animal"
                 visible:    animalGrid.model.length === 0
-                onAcionClicked: nuevoAnimalLoader.active = true
+                onAccionClicked: nuevoAnimalLoader.active = true
             }
 
             GridView {

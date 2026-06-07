@@ -301,7 +301,7 @@ Item {
                 mensaje:    "Aún no tienes fincas registradas.\nCrea tu primera finca para comenzar."
                 textoBoton: "Crear primera finca"
                 visible:    fincaGrid.model.length === 0
-                onAcionClicked: fincaModal.abrirNueva()
+                onAccionClicked: fincaModal.abrirNueva()
             }
 
             // Grid de fincas
