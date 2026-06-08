@@ -9,17 +9,34 @@ set "QT_DIR=C:\Qt\6.11.1\mingw_64"
 set "CMAKE_BIN=C:\Qt\Tools\CMake_64\bin"
 set "MINGW_BIN=C:\Qt\Tools\mingw1310_64\bin"
 
+REM --- vcpkg: usar variable de entorno VCPKG_ROOT o buscar en ruta comun ---
+if "%VCPKG_ROOT%"=="" set "VCPKG_ROOT=C:\vcpkg"
+set "VCPKG_TOOLCHAIN=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake"
+
 REM --- Agregar herramientas al PATH de esta ventana ---
 set "PATH=%CMAKE_BIN%;%MINGW_BIN%;%QT_DIR%\bin;%PATH%"
 
 cd /d "%~dp0"
+
+REM --- Verificar que existe el toolchain de vcpkg ---
+if not exist "%VCPKG_TOOLCHAIN%" (
+    echo.
+    echo   ERROR: No se encontro vcpkg en "%VCPKG_ROOT%"
+    echo   Instala vcpkg en C:\vcpkg o define la variable VCPKG_ROOT.
+    echo   Ver: https://learn.microsoft.com/vcpkg/get_started/get-started
+    echo.
+    pause
+    exit /b 1
+)
 
 echo.
 echo ============================================
 echo   [1/4] Configurando proyecto...
 echo ============================================
 if not exist "build\CMakeCache.txt" (
-    cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="%QT_DIR%"
+    cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ^
+        -DCMAKE_PREFIX_PATH="%QT_DIR%" ^
+        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_TOOLCHAIN%"
     if errorlevel 1 goto error
 ) else (
     echo    Ya configurado, omitiendo.
