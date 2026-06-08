@@ -12,6 +12,8 @@ set "MINGW_BIN=C:\Qt\Tools\mingw1310_64\bin"
 REM --- vcpkg: usar variable de entorno VCPKG_ROOT o buscar en ruta comun ---
 if "%VCPKG_ROOT%"=="" set "VCPKG_ROOT=C:\vcpkg"
 set "VCPKG_TOOLCHAIN=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake"
+REM --- Triplete MinGW (compatible con el compilador de Qt) ---
+set "VCPKG_TRIPLET=x64-mingw-dynamic"
 
 REM --- Agregar herramientas al PATH de esta ventana ---
 set "PATH=%CMAKE_BIN%;%MINGW_BIN%;%QT_DIR%\bin;%PATH%"
@@ -36,7 +38,8 @@ echo ============================================
 if not exist "build\CMakeCache.txt" (
     cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ^
         -DCMAKE_PREFIX_PATH="%QT_DIR%" ^
-        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_TOOLCHAIN%"
+        -DCMAKE_TOOLCHAIN_FILE="%VCPKG_TOOLCHAIN%" ^
+        -DVCPKG_TARGET_TRIPLET="%VCPKG_TRIPLET%"
     if errorlevel 1 goto error
 ) else (
     echo    Ya configurado, omitiendo.

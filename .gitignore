@@ -7,3 +7,4 @@ CMakeUserPresets.json
 *.o
 ganadero.db
 ganadero_lmdb/
+vcpkg_installed/
