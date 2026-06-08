@@ -10,7 +10,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Charts)
-find_package(SQLite3 REQUIRED)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
 find_package(unofficial-lmdb CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
