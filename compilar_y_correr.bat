@@ -58,9 +58,14 @@ if errorlevel 1 goto error
 
 echo.
 echo ============================================
-echo   [3/4] Copiando librerias de Qt...
+echo   [3/4] Copiando librerias de Qt y vcpkg...
 echo ============================================
 "%QT_DIR%\bin\windeployqt.exe" --qmldir "%~dp0src\ui" "build\bin\SoftwareGanadero.exe"
+
+REM --- Copiar DLLs de vcpkg (sqlite3, lmdb) que windeployqt no copia ---
+set "VCPKG_BIN=build\vcpkg_installed\x64-mingw-dynamic\bin"
+if exist "%VCPKG_BIN%\libsqlite3.dll"  copy /Y "%VCPKG_BIN%\libsqlite3.dll"  "build\bin\" >nul
+if exist "%VCPKG_BIN%\liblmdb.dll"     copy /Y "%VCPKG_BIN%\liblmdb.dll"     "build\bin\" >nul
 
 echo.
 echo ============================================
