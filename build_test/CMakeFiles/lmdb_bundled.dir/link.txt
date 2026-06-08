@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblmdb_bundled.a CMakeFiles/lmdb_bundled.dir/lmdb_bundled_autogen/mocs_compilation.cpp.o CMakeFiles/lmdb_bundled.dir/src/third_party/lmdb/mdb.c.o CMakeFiles/lmdb_bundled.dir/src/third_party/lmdb/midl.c.o
-/usr/bin/ranlib liblmdb_bundled.a

@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/SoftwareGanadero">
-    <file alias="qmldir">/home/user/SOFTWARE-GANADERO/build_test/src/SoftwareGanadero/qmldir</file>
-  </qresource>
-</RCC>
-
