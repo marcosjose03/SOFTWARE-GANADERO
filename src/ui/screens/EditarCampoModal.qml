@@ -9,6 +9,7 @@ Popup {
     height: 320
     modal: true
     closePolicy: Popup.NoAutoClose
+    background: Rectangle { color: "white"; border.color: "#e0e0e0"; radius: 6 }
 
     signal campoActualizado()
 

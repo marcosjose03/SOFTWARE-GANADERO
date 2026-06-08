@@ -29,11 +29,14 @@ set(SOURCES
 
 qt_add_executable(SoftwareGanadero ${SOURCES})
 
-
+set_target_properties(SoftwareGanadero PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
 
 qt_add_qml_module(SoftwareGanadero
     URI SoftwareGanadero
     VERSION 1.0
+    NO_CACHEGEN
     QML_FILES
         ui/main.qml
         ui/screens/LoginScreen.qml

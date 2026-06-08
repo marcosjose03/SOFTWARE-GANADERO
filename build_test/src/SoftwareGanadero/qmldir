@@ -1,0 +1,17 @@
+module SoftwareGanadero
+typeinfo SoftwareGanadero.qmltypes
+prefer :/SoftwareGanadero/
+LoginScreen 1.0 ui/screens/LoginScreen.qml
+RegisterScreen 1.0 ui/screens/RegisterScreen.qml
+MenuScreen 1.0 ui/screens/MenuScreen.qml
+InventarioScreen 1.0 ui/screens/InventarioScreen.qml
+RegistroReproductivoScreen 1.0 ui/screens/RegistroReproductivoScreen.qml
+RegistroLecheScreen 1.0 ui/screens/RegistroLecheScreen.qml
+RegistroPesoScreen 1.0 ui/screens/RegistroPesoScreen.qml
+CalendarPopup 1.0 ui/screens/CalendarPopup.qml
+EditarCampoModal 1.0 ui/screens/EditarCampoModal.qml
+NuevoAnimalModal 1.0 ui/screens/NuevoAnimalModal.qml
+DetalleAnimalComponent 1.0 ui/screens/DetalleAnimalComponent.qml
+RegistroLecheAnimalView 1.0 ui/screens/RegistroLecheAnimalView.qml
+RegistroCarneAnimalView 1.0 ui/screens/RegistroCarneAnimalView.qml
+
